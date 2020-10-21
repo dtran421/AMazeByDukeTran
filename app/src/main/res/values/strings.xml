@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">AMazeByDukeTran</string>
+    <string name="app_name">A Maze By Duke Tran</string>
+    <string name="greeting">Behold the Labyrinth!</string>
+    <string name="builderText">Builder</string>
+    <string name="driverText">Driver</string>
+    <string name="exploreText">Explore</string>
+    <string name="revisitText">Revisit</string>
+    <string-array name="builder">
+        <item>Random</item>
+        <item>Prim</item>
+        <item>Eller</item>
+    </string-array>
+    <string-array name="driver">
+        <item>Manual</item>
+        <item>Wizard</item>
+        <item>Wallfollower</item>
+    </string-array>
 </resources>
