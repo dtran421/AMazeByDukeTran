@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "edu.wm.cs.cs301.duketran"
-        minSdkVersion 14
+        minSdkVersion 29
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"

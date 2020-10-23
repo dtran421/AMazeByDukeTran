@@ -6,10 +6,4 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="CustomSeekBar" parent="Widget.AppCompat.SeekBar">
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:width">100dp</item>
-        <item name="android:height">100dp</item>
-    </style>
-
 </resources>

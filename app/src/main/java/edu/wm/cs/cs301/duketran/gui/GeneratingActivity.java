@@ -1,8 +1,8 @@
 package edu.wm.cs.cs301.duketran.gui;
 
 import edu.wm.cs.cs301.duketran.R;
-import android.app.Activity;
-import android.content.Intent;
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,8 +14,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
-public class GeneratingActivity extends Activity implements Runnable {
+/**
+ * Class: GeneratingActivity
+ * <br>
+ * Responsibilities: intermediate screen while maze is generating, user can select a driver
+ * and robot, navigates back to AMazeActivity (which then navigates to a Play activity)
+ * <br>
+ * Collaborators: AMazeActivity
+ */
+public class GeneratingActivity extends AppCompatActivity implements Runnable {
     private Handler handler;
+    private Thread generationThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +32,7 @@ public class GeneratingActivity extends Activity implements Runnable {
         setContentView(R.layout.activity_generating);
 
         handler = new Handler();
-        Thread generationThread = new Thread(this);
+        generationThread = new Thread(this);
         generationThread.start();
 
         Spinner driverSpinner = findViewById(R.id.driverSpinner);
@@ -52,7 +61,7 @@ public class GeneratingActivity extends Activity implements Runnable {
                 String driver = driverSpinner.getSelectedItem().toString();
 
                 Spinner robotSpinner = findViewById(R.id.robotSpinner);
-                String robot = robotSpinner.getSelectedItem().toString();
+                String robot = robotSpinner.getSelectedItem().toString().split(" ")[0];
 
                 Intent result = new Intent(GeneratingActivity.this, AMazeActivity.class);
                 result.putExtra("Driver", driver);
@@ -62,6 +71,16 @@ public class GeneratingActivity extends Activity implements Runnable {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        generationThread.interrupt();
+        GeneratingActivity.this.setResult(RESULT_CANCELED, new Intent(GeneratingActivity.this, AMazeActivity.class));
+        GeneratingActivity.this.finish();
+        Log.v("Maze Generation", "Cancelling generation");
+    }
+
 
     private void toggleRobotLayout(String selectedItem) {
         LinearLayout robotLayout = findViewById(R.id.robotLayout);

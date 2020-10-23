@@ -10,6 +10,12 @@
     <string name="mode_text">Customize Your Hero</string>
     <string name="robotText">Robot</string>
     <string name="play_text">Begin Quest</string>
+    <string name="pathLengthText">Path Length: %1$d</string>
+    <string name="showMapText">Show Map</string>
+    <string name="showSolutionText">Show Solution</string>
+    <string name="showAllWallsText">Show All Walls</string>
+    <string name="menuText">||</string>
+    <string name="shortcutText">Shortcut</string>
     <string-array name="builder">
         <item>Random</item>
         <item>Prim</item>

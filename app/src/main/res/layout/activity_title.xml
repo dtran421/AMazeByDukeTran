@@ -5,41 +5,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_image"
+    android:background="@drawable/dungeon_entrance"
     tools:context=".gui.AMazeActivity">
 
+    <ImageView
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:src="@drawable/minotaur_thumb"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/greetingText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
-        android:id="@+id/greetingView"
+        android:id="@+id/greetingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="175dp"
         android:gravity="center_horizontal"
         android:text="@string/greeting"
         android:textColor="@color/colorPrimary"
         android:textSize="36sp"
         app:fontFamily="casual"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="7.5dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginHorizontal="25dp"
         android:layout_marginTop="300dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="1dp"
         android:gravity="center"
         android:max="14"
-        android:theme="@style/CustomSeekBar"
         android:thumb="@mipmap/ic_launcher_round"
-        android:thumbOffset="1.5dp"
+        android:thumbOffset="1dp"
         app:layout_constraintBottom_toTopOf="@+id/builderLayout"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:targetApi="lollipop" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/builderLayout"
@@ -81,7 +85,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
             android:text="@string/rooms_text"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp" />
@@ -111,7 +114,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
             android:paddingHorizontal="6dp"
             android:paddingVertical="4dp"
             android:text="@string/revisitText"
@@ -126,7 +128,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
             android:paddingHorizontal="6dp"
             android:paddingVertical="4dp"
             android:text="@string/exploreText"

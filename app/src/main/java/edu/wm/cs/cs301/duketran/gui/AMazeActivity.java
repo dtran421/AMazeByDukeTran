@@ -1,6 +1,7 @@
 package edu.wm.cs.cs301.duketran.gui;
 
 import edu.wm.cs.cs301.duketran.R;
+import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,11 +12,18 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-public class AMazeActivity extends Activity {
-    private static final int KEY_GENERATION = 0;
+/**
+ * Class: AMazeActivity
+ * <br>
+ * Responsibilities: title screen for the maze game, select a skill level, maze builder,
+ * and whether there are rooms, navigate to the other states
+ * <br>
+ * Collaborators: GeneratingActivity, PlayManuallyActivity, PlayAnimationActivity
+ */
+public class AMazeActivity extends AppCompatActivity {
+    private static final int KEY_GENERATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +71,17 @@ public class AMazeActivity extends Activity {
                 Log.v("Inputted Driver", driver);
                 Log.v("Inputted Robot", robot);
 
+                Intent mazeGame = new Intent(AMazeActivity.this,
+                        (driver.equals("Manual") ? PlayManuallyActivity.class : PlayManuallyActivity.class));
+                mazeGame.putExtra("Driver", driver);
+                mazeGame.putExtra("Robot", robot);
+
                 Toast toast = Toast.makeText(AMazeActivity.this, "Loading game...", Toast.LENGTH_SHORT);
                 toast.show();
-                //startActivity(mazeGeneration, KEY_GENERATION);
+                startActivity(mazeGame);
             }
             else if (resultCode == Activity.RESULT_CANCELED) {
-                Log.e("Maze Generation", "Failed!");
+                Log.e("Maze Generation", "Canceled");
             }
     }
 
