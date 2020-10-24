@@ -8,5 +8,7 @@
                 android:width="5dp" />
         </shape>
     </item>
-    <item android:drawable="@mipmap/minotaur" />
+    <item
+        android:drawable="@mipmap/minotaur"
+        android:foregroundTint="@color/colorAccent" />
 </layer-list>

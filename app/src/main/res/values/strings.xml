@@ -16,6 +16,22 @@
     <string name="showAllWallsText">Show All Walls</string>
     <string name="menuText">||</string>
     <string name="shortcutText">Shortcut</string>
+    <string name="go2WinningText">Go2Winning</string>
+    <string name="go2LosingText">Go2Losing</string>
+    <string name="sensorsText">Sensors</string>
+    <string name="animationSpeedText">Animation Speed</string>
+    <string name="startAnimationText">Start Animation</string>
+    <string name="stopAnimationText">Stop Animation</string>
+    <string name="energyConsumptionText">Energy consumption</string>
+    <string name="menuButtonDescription">Menu button</string>
+    <string name="zoomOutButtonDescription">Zoom out button</string>
+    <string name="zoomInButtonDescription">Zoom in button</string>
+    <string name="forwardButtonDescription">Forward button</string>
+    <string name="rightButtonDescription">Right button</string>
+    <string name="backwardButtonDescription">Backward button</string>
+    <string name="leftButtonDescription">Left button</string>
+    <string name="jumpButtonDescription">Jump button</string>
+    <string name="minotaurIconDescription">Minotaur icon</string>
     <string-array name="builder">
         <item>Random</item>
         <item>Prim</item>

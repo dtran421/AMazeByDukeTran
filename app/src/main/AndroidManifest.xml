@@ -22,5 +22,8 @@
         <activity
             android:name=".gui.PlayManuallyActivity"
             android:parentActivityName=".gui.AMazeActivity" />
+        <activity
+            android:name=".gui.PlayAnimationActivity"
+            android:parentActivityName=".gui.AMazeActivity" />
     </application>
 </manifest>

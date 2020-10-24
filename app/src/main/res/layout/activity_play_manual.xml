@@ -12,7 +12,7 @@
         android:id="@+id/pathLengthText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:text="@string/pathLengthText"
         android:textSize="28sp"
         android:textColor="@color/colorPrimary"
@@ -22,11 +22,12 @@
 
     <ImageView
         android:id="@+id/menuButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:contentDescription="@string/menuButtonDescription"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginVertical="10dp"
         android:layout_marginEnd="10dp"
-        android:paddingVertical="10dp"
+        android:paddingVertical="5dp"
         android:src="@mipmap/pause"
         android:background="@color/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,24 +38,24 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        app:layout_constraintTop_toBottomOf="@id/menuButton"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/zoomOutButton"
+            android:contentDescription="@string/zoomOutButtonDescription"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="10dp"
             android:background="@color/colorPrimaryTranslucent"
-            android:gravity="center"
             android:src= "@mipmap/minus"/>
 
         <ImageView
             android:id="@+id/zoomInButton"
+            android:contentDescription="@string/zoomInButtonDescription"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@color/colorPrimaryTranslucent"
-            android:gravity="center"
             android:src="@mipmap/plus" />
     </LinearLayout>
 
@@ -71,6 +72,7 @@
 
     <ImageView
         android:id="@+id/forwardButton"
+        android:contentDescription="@string/forwardButtonDescription"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="135dp"
@@ -84,6 +86,7 @@
 
     <ImageView
         android:id="@+id/rightButton"
+        android:contentDescription="@string/rightButtonDescription"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="75dp"
@@ -95,7 +98,8 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
-        android:id="@+id/backButton"
+        android:id="@+id/backwardButton"
+        android:contentDescription="@string/backwardButtonDescription"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="15dp"
@@ -109,6 +113,7 @@
 
     <ImageView
         android:id="@+id/leftButton"
+        android:contentDescription="@string/leftButtonDescription"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="75dp"
@@ -122,6 +127,7 @@
 
     <ImageView
         android:id ="@+id/jumpButton"
+        android:contentDescription="@string/jumpButtonDescription"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_marginBottom="20dp"

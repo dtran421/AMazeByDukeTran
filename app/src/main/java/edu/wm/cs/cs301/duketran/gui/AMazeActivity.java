@@ -14,6 +14,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.util.Objects;
+
 /**
  * Class: AMazeActivity
  * <br>
@@ -37,8 +39,12 @@ public class AMazeActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         builderSpinner.setAdapter(adapter);
 
-        Button exploreButton = findViewById(R.id.exploreButton);
-        exploreButton.setOnClickListener(new View.OnClickListener() {
+        setUpNavigationButton((Button) findViewById(R.id.exploreButton));
+    }
+
+    public void setUpNavigationButton(Button navigationButton) {
+        // TODO: implement different functions for the Revisit and Explore buttons
+        navigationButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 SeekBar skillLevelSeekBar = findViewById(R.id.seekBar);
                 int skillLevel = skillLevelSeekBar.getProgress();
@@ -66,13 +72,13 @@ public class AMazeActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == KEY_GENERATION)
             if (resultCode == Activity.RESULT_OK) {
-                String driver = data.getExtras().get("Driver").toString();
-                String robot = data.getExtras().get("Robot").toString();
+                String driver = Objects.requireNonNull(Objects.requireNonNull(data.getExtras()).get("Driver")).toString();
+                String robot = Objects.requireNonNull(data.getExtras().get("Robot")).toString();
                 Log.v("Inputted Driver", driver);
                 Log.v("Inputted Robot", robot);
 
                 Intent mazeGame = new Intent(AMazeActivity.this,
-                        (driver.equals("Manual") ? PlayManuallyActivity.class : PlayManuallyActivity.class));
+                        (driver.equals("Manual") ? PlayManuallyActivity.class : PlayAnimationActivity.class));
                 mazeGame.putExtra("Driver", driver);
                 mazeGame.putExtra("Robot", robot);
 

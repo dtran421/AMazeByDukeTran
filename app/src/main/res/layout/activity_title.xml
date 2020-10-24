@@ -9,6 +9,7 @@
     tools:context=".gui.AMazeActivity">
 
     <ImageView
+        android:contentDescription="@string/minotaurIconDescription"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:src="@drawable/minotaur_thumb"

@@ -110,7 +110,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="30dp"
-        android:paddingHorizontal="10dp"
         android:text="@string/play_text"
         android:background="@color/colorAccent"
         android:visibility="invisible"
