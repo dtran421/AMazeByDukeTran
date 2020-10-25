@@ -3,13 +3,14 @@ package edu.wm.cs.cs301.duketran.gui;
 import edu.wm.cs.cs301.duketran.R;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.google.android.material.slider.Slider;
 
 import java.util.Objects;
@@ -22,7 +23,7 @@ import java.util.Objects;
  * Collaborators: AMazeActivity, WinningActivity, LosingActivity
  */
 public class PlayAnimationActivity extends PlayActivity {
-    private Context context = this;
+    final private float energyConsumption = 3500;
 
     private boolean isAnimating = true;
     private int animationSpeed = 1;
@@ -42,7 +43,7 @@ public class PlayAnimationActivity extends PlayActivity {
     }
 
     private void setUpButtons() {
-        setUpMenuButton(context, (ImageView) findViewById(R.id.menuButton));
+        setUpMenuButton(this, (ImageView) findViewById(R.id.menuButton));
         setUpZoomButtons((ImageView) findViewById(R.id.zoomInButton), (ImageView) findViewById(R.id.zoomOutButton));
         setUpAnimationComponents();
 
@@ -51,6 +52,15 @@ public class PlayAnimationActivity extends PlayActivity {
             @Override
             public void onClick(View v) {
                 Log.v("Animation Play", "Proceeding to WinningActivity");
+                Intent winningState = new Intent(PlayAnimationActivity.this, WinningActivity.class);
+                winningState.putExtra("Manual", false);
+                winningState.putExtra("Path Length", pathLength);
+                winningState.putExtra("Energy Consumption", energyConsumption);
+
+                Toast toast = Toast.makeText(PlayAnimationActivity.this, "You escaped!", Toast.LENGTH_SHORT);
+                toast.show();
+                startActivity(winningState);
+                finish();
             }
         });
         Button losingButton = findViewById(R.id.losingButton);
@@ -68,10 +78,11 @@ public class PlayAnimationActivity extends PlayActivity {
             @Override
             public void onClick(View v) {
                 isAnimating = !isAnimating;
-                animationButton.setBackgroundColor(isAnimating ? ContextCompat.getColor(context, R.color.colorRepair)
-                        : ContextCompat.getColor(context, R.color.colorOperational));
+                animationButton.setBackgroundColor(isAnimating ? ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorRepair)
+                        : ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorOperational));
                 animationButton.setText(isAnimating ? R.string.stopAnimationText : R.string.startAnimationText);
-                animationButton.setTextColor(isAnimating ? ContextCompat.getColor(context, R.color.colorPrimary) : ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                animationButton.setTextColor(isAnimating ? ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorPrimary)
+                        : ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorPrimaryDark));
                 Log.v("Currently animating", ""+isAnimating);
             }
         });

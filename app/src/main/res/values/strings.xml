@@ -32,6 +32,9 @@
     <string name="leftButtonDescription">Left button</string>
     <string name="jumpButtonDescription">Jump button</string>
     <string name="minotaurIconDescription">Minotaur icon</string>
+    <string name="winningText">Quest Complete!</string>
+    <string name="totalEnergyConsumptionText">Energy Consumption: %1$s</string>
+    <string name="newQuestText">Start New Quest</string>
     <string-array name="builder">
         <item>Random</item>
         <item>Prim</item>

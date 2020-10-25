@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dungeon_exit"
+    android:background="@drawable/dungeon_hallway"
     tools:context=".gui.GeneratingActivity">
 
     <TextView
@@ -185,6 +185,7 @@
         android:layout_marginStart="10dp"
         android:text="@string/stopAnimationText"
         android:textSize="20sp"
+        android:textStyle="bold"
         android:textColor="@color/colorPrimary"
         android:backgroundTint="@color/colorRepair"
         app:layout_constraintBottom_toTopOf="@id/animationSpeedLayout"

@@ -85,9 +85,10 @@ public class AMazeActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(AMazeActivity.this, "Loading game...", Toast.LENGTH_SHORT);
                 toast.show();
                 startActivity(mazeGame);
+                finish();
             }
             else if (resultCode == Activity.RESULT_CANCELED) {
-                Log.e("Maze Generation", "Canceled");
+                Log.w("Maze Generation", "Canceled");
             }
     }
 

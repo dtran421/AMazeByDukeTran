@@ -25,5 +25,8 @@
         <activity
             android:name=".gui.PlayAnimationActivity"
             android:parentActivityName=".gui.AMazeActivity" />
+        <activity
+            android:name=".gui.WinningActivity"
+            android:parentActivityName=".gui.AMazeActivity" />
     </application>
 </manifest>

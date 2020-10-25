@@ -1,13 +1,13 @@
 package edu.wm.cs.cs301.duketran.gui;
 
 import edu.wm.cs.cs301.duketran.R;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -19,7 +19,6 @@ import java.util.Objects;
  * Collaborators: AMazeActivity, WinningActivity, LosingActivity
  */
 public class PlayManuallyActivity extends PlayActivity {
-    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class PlayManuallyActivity extends PlayActivity {
     }
 
     private void setUpButtons() {
-        setUpMenuButton(context, (ImageView) findViewById(R.id.menuButton));
+        setUpMenuButton(this, (ImageView) findViewById(R.id.menuButton));
         setUpZoomButtons((ImageView) findViewById(R.id.zoomInButton), (ImageView) findViewById(R.id.zoomOutButton));
         setUpMoveButtons();
 
@@ -44,6 +43,14 @@ public class PlayManuallyActivity extends PlayActivity {
             @Override
             public void onClick(View v) {
                 Log.v("Manual Play", "Proceeding to WinningActivity");
+                Intent winningState = new Intent(PlayManuallyActivity.this, WinningActivity.class);
+                winningState.putExtra("Manual", true);
+                winningState.putExtra("Path Length", pathLength);
+
+                Toast toast = Toast.makeText(PlayManuallyActivity.this, "You escaped!", Toast.LENGTH_SHORT);
+                toast.show();
+                startActivity(winningState);
+                finish();
             }
         });
     }
