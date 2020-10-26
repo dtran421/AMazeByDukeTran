@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/dungeon_hallway"
-    tools:context=".gui.GeneratingActivity">
+    tools:context=".gui.PlayAnimationActivity">
 
     <TextView
         android:id="@+id/pathLengthText"
@@ -85,6 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:progress="100"
+            android:progressDrawable="@drawable/energy_progress"
             app:layout_constraintTop_toBottomOf="@id/energyConsumptionText"
             app:layout_constraintStart_toStartOf="@id/energyConsumptionText"
             app:layout_constraintEnd_toEndOf="@id/pathLengthText"/>
@@ -215,7 +216,11 @@
             android:layout_height="wrap_content"
             android:valueFrom="1.0"
             android:valueTo="10.0"
-            android:stepSize="1.0" />
+            android:stepSize="1.0"
+            app:tickColor="@color/colorPrimary"
+            app:trackColor="@color/colorPrimaryDark"
+            app:trackHeight="10dp"
+            app:thumbColor="@color/colorAccent" />
 
     </LinearLayout>
 

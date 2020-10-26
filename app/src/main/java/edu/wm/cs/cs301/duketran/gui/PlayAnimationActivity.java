@@ -68,6 +68,15 @@ public class PlayAnimationActivity extends PlayActivity {
             @Override
             public void onClick(View v) {
                 Log.v("Animation Play", "Proceeding to LosingActivity");
+                Intent losingState = new Intent(PlayAnimationActivity.this, LosingActivity.class);
+                losingState.putExtra("Manual", false);
+                losingState.putExtra("Path Length", pathLength);
+                losingState.putExtra("Energy Consumption", energyConsumption);
+
+                Toast toast = Toast.makeText(PlayAnimationActivity.this, "You died!", Toast.LENGTH_SHORT);
+                toast.show();
+                startActivity(losingState);
+                finish();
             }
         });
     }
@@ -88,10 +97,13 @@ public class PlayAnimationActivity extends PlayActivity {
         });
 
         Slider animationSlider = findViewById(R.id.animationSpeedSlider);
-        animationSlider.addOnChangeListener(new Slider.OnChangeListener() {
+        animationSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
-            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-                animationSpeed = (int) value;
+            public void onStartTrackingTouch(@NonNull Slider slider) {}
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                animationSpeed = (int) slider.getValue();
                 Log.v("Animation speed", ""+animationSpeed);
             }
         });

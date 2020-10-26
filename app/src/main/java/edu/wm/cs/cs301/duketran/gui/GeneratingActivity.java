@@ -2,6 +2,7 @@ package edu.wm.cs.cs301.duketran.gui;
 
 import edu.wm.cs.cs301.duketran.R;
 import androidx.appcompat.app.AppCompatActivity;import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,8 +11,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
+
+import com.google.android.material.button.MaterialButton;
 
 /**
  * Class: GeneratingActivity
@@ -29,6 +31,9 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generating);
+
+        AnimationDrawable progressAnimation = (AnimationDrawable) findViewById(R.id.parentView).getBackground();
+        progressAnimation.start();
 
         handler = new Handler();
         generationThread = new Thread(this);
@@ -93,7 +98,7 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
         Log.v("SkillLevel", ""+intent.getIntExtra("SkillLevel", 0));
         Log.v("Builder", ""+intent.getStringExtra("Builder"));
         Log.v("Rooms", ""+intent.getBooleanExtra("Rooms", false));
-        ProgressBar progressBar = findViewById(R.id.progressBar);
+        View minotaurProgress = findViewById(R.id.minotaurProgress);
         int currentProgress = 0;
         while (currentProgress < 100) {
             try {
@@ -104,12 +109,12 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
                 return;
             }
             currentProgress += 15;
-            progressBar.setProgress(currentProgress);
+            minotaurProgress.getBackground().setLevel(currentProgress*100);
         }
 
         handler.post(new Runnable() {
             public void run() {
-                Button playButton = findViewById(R.id.playButton);
+                MaterialButton playButton = findViewById(R.id.playButton);
                 playButton.setVisibility(View.VISIBLE);
             }
         });

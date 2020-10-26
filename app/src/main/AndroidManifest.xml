@@ -28,5 +28,8 @@
         <activity
             android:name=".gui.WinningActivity"
             android:parentActivityName=".gui.AMazeActivity" />
+        <activity
+            android:name=".gui.LosingActivity"
+            android:parentActivityName=".gui.AMazeActivity" />
     </application>
 </manifest>

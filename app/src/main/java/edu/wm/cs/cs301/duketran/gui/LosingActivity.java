@@ -13,27 +13,26 @@ import android.widget.TextView;
 import java.util.Locale;
 
 /**
- * Class: WinningActivity
+ * Class: LosingActivity
  * <br>
- * Responsibilities: displays the winning screen along with path length and energy consumption,
+ * Responsibilities: displays the losing screen along with path length and energy consumption,
  * allows the user to navigate back to the title screen  and play again
  * <br>
  * Collaborators: AMazeActivity, PlayManuallyActivity, PlayAnimationActivity
  */
-public class WinningActivity extends AppCompatActivity {
-
+public class LosingActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_winning);
+        setContentView(R.layout.activity_losing);
 
         AnimationDrawable progressAnimation = (AnimationDrawable) findViewById(R.id.parentView).getBackground();
         progressAnimation.start();
 
-        Intent winningState = getIntent();
+        Intent losingState = getIntent();
         Resources res = getResources();
-        if (!winningState.getBooleanExtra("Manual", true)) {
-            String energyConsumption = String.format(Locale.US, "%.1f", winningState.getFloatExtra("Energy Consumption", 0));
+        if (!losingState.getBooleanExtra("Manual", true)) {
+            String energyConsumption = String.format(Locale.US, "%.1f", losingState.getFloatExtra("Energy Consumption", 0));
             String totalEnergyConsumptionText = res.getString(R.string.totalEnergyConsumptionText);
             TextView energyConsumptionText = findViewById(R.id.energyConsumptionText);
             energyConsumptionText.setVisibility(View.VISIBLE);
@@ -41,14 +40,14 @@ public class WinningActivity extends AppCompatActivity {
         }
         String pathLengthString = res.getString(R.string.pathLengthText);
         TextView pathLengthText = findViewById(R.id.pathLengthText);
-        pathLengthText.setText(String.format(pathLengthString, winningState.getIntExtra("Path Length", 0)));
+        pathLengthText.setText(String.format(pathLengthString, losingState.getIntExtra("Path Length", 0)));
 
         Button newQuestButton = findViewById(R.id.newQuestButton);
         newQuestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v("Winning State", "Returning to title");
-                Intent returnToTitle = new Intent(WinningActivity.this, AMazeActivity.class);
+                Log.v("Losing State", "Returning to title");
+                Intent returnToTitle = new Intent(LosingActivity.this, AMazeActivity.class);
                 startActivity(returnToTitle);
                 finish();
             }

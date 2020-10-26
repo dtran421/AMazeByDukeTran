@@ -8,5 +8,8 @@
                 android:width="5dp" />
         </shape>
     </item>
-    <item android:drawable="@mipmap/crossed_swords" />
+    <item
+        android:drawable="@mipmap/crossed_swords"
+        android:width="65dp"
+        android:height="65dp"/>
 </layer-list>

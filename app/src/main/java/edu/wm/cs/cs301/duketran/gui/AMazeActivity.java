@@ -4,6 +4,7 @@ import edu.wm.cs.cs301.duketran.R;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,9 @@ public class AMazeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_title);
+
+        AnimationDrawable progressAnimation = (AnimationDrawable) findViewById(R.id.parentView).getBackground();
+        progressAnimation.start();
 
         Log.v("App Launch", "Successful");
 
@@ -85,7 +89,6 @@ public class AMazeActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(AMazeActivity.this, "Loading game...", Toast.LENGTH_SHORT);
                 toast.show();
                 startActivity(mazeGame);
-                finish();
             }
             else if (resultCode == Activity.RESULT_CANCELED) {
                 Log.w("Maze Generation", "Canceled");

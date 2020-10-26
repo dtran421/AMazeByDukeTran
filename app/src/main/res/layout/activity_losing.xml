@@ -7,15 +7,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/dungeon_exit_animated"
-    tools:context=".gui.WinningActivity">
+    tools:context=".gui.LosingActivity">
 
     <TextView
-        android:id="@+id/winningText"
+        android:id="@+id/losingText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="150dp"
         android:paddingVertical="15dp"
-        android:text="@string/winningText"
+        android:text="@string/losingText"
         android:fontFamily="casual"
         android:textSize="36sp"
         android:textColor="@color/colorPrimary"
@@ -34,7 +34,7 @@
         android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="@color/colorPrimary"
-        app:layout_constraintTop_toBottomOf="@id/winningText"
+        app:layout_constraintTop_toBottomOf="@id/losingText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
