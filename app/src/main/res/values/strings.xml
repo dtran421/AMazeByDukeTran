@@ -38,6 +38,8 @@
     <string name="losingText">Quest Failed!</string>
     <string name="skillLevelText">Difficulty (Skill Level)</string>
     <string name="shortestPathText">Shortest Path: %1$d</string>
+    <string name="slowText">Slow</string>
+    <string name="fastText">Fast</string>
     <string-array name="builder">
         <item>Random</item>
         <item>Prim</item>

@@ -72,7 +72,9 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
                 // obtain the selected driver
                 Spinner driverSpinner = findViewById(R.id.driverSpinner);
                 String driver = driverSpinner.getSelectedItem().toString();
-                // obtain the selected robot
+                // obtain the selected robot (Demigod has 4 reliable sensors, Warrior has unreliable
+                // left and right sensors, Captain has unreliable front and back sensors, Soldier
+                // has 4 unreliable sensors)
                 Spinner robotSpinner = findViewById(R.id.robotSpinner);
                 String robot = robotSpinner.getSelectedItem().toString().split(" ")[0];
 
