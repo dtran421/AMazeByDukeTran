@@ -60,7 +60,7 @@
             android:paddingStart="50dp"
             android:paddingEnd="50dp"
             android:gravity="center"
-            android:max="14"
+            android:max="16"
             android:progressDrawable="@drawable/skill_seekbar"
             android:thumb="@drawable/crossed_swords"
             android:splitTrack="false"

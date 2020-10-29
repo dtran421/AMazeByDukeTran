@@ -9,7 +9,7 @@ import android.os.Bundle;
  * Class: WinningActivity
  * <br>
  * Responsibilities: displays the winning screen along with path length and energy consumption,
- * allows the user to navigate back to the title screen  and play again
+ * allows the user to navigate back to the title screen and play again
  * <br>
  * Collaborators: AMazeActivity, PlayManuallyActivity, PlayAnimationActivity
  */

@@ -59,6 +59,15 @@
             android:src="@mipmap/plus" />
     </LinearLayout>
 
+    <edu.wm.cs.cs301.duketran.gui.MazePanel
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:foregroundGravity="center_horizontal"
+        app:layout_constraintTop_toBottomOf="@id/pathLengthText"
+        app:layout_constraintBottom_toTopOf="@id/forwardButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/shortcutButton"
         android:layout_width="wrap_content"
@@ -66,9 +75,9 @@
         android:layout_marginTop="225dp"
         android:text="@string/shortcutText"
         android:textSize="36sp"
+        app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pathLengthText" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/forwardButton"
