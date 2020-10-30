@@ -13,7 +13,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-public class MazePanel extends View {
+public class MazePanel extends View implements P5Panel {
     // bufferImage can only be initialized if the container is displayable,
     // uses a delayed initialization and relies on client class to call initBufferImage()
     // before first use
@@ -36,6 +36,9 @@ public class MazePanel extends View {
     static final int GRAY = 10066329;
     static final int RED = 16711680;
     static final int YELLOW = 16776960;
+
+    static final int RGB_DEF = 20;
+    static final int RGB_DEF_GREEN = 60;
 
     /**
      * Dimensions for the FirstPersonView
@@ -65,7 +68,6 @@ public class MazePanel extends View {
         Log.v("Draw status", "Working...");
         canvas.drawColor(Color.LTGRAY);
         myTestImage(canvas);
-        update(canvas);
     }
 
     private void myTestImage(Canvas c) {
@@ -80,6 +82,7 @@ public class MazePanel extends View {
         int[] yPoints = {100, 125, 200, 200, 125};
         addFilledPolygon(xPoints, yPoints, 5);
         addLine(0, 200, 100, 300);
+        update(c);
     }
 
     /**
@@ -147,8 +150,9 @@ public class MazePanel extends View {
      * Commits all accumulated drawings to the UI.
      * Substitute for MazePanel.update method.
      */
-    public void commit(Canvas canvas) {
-        update(canvas);
+    @Override
+    public void commit() {
+        update();
     }
 
     /**
@@ -158,6 +162,7 @@ public class MazePanel extends View {
      * Substitute for code that checks if graphics object for drawing is not null.
      * @return true if drawing is possible, false if not.
      */
+    @Override
     public boolean isOperational() {
         if (null == getBufferCanvas()) {
             Log.e("MazePanel", "Can't get buffer canvas object to draw on, skipping draw operation");
@@ -173,6 +178,7 @@ public class MazePanel extends View {
      * Substitute for Graphics.setColor method.
      * @param rgb gives the red green and blue encoded value of the color
      */
+    @Override
     public void setColor(int rgb) {
         currentColor = rgb;
         paint.setColor(rgb);
@@ -182,6 +188,7 @@ public class MazePanel extends View {
      * Returns the RGB value for the current color setting.
      * @return integer RGB value
      */
+    @Override
     public int getColor() {
         return currentColor;
     }
@@ -218,6 +225,7 @@ public class MazePanel extends View {
      * Substitute for FirstPersonView.drawBackground method.
      * @param percentToExit gives the distance to exit
      */
+    @Override
     public void addBackground(float percentToExit) {
         // black rectangle in upper half of screen
         // graphics.setColor(Color.black);
@@ -236,7 +244,7 @@ public class MazePanel extends View {
      * rectangle as a blend between starting color settings
      * of black and grey towards gold and green as final
      * color settings close to the exit
-     * @param percentToExit
+     * @param percentToExit percent of the maze remaining to reach the exit
      * @param top is true for the top triangle, false for the bottom
      * @return the color to use for the background rectangle
      */
@@ -244,6 +252,7 @@ public class MazePanel extends View {
         return top ? blend(MazePanel.yellowWM, MazePanel.goldWM, percentToExit) :
                 blend(MazePanel.LIGHT_GRAY, MazePanel.greenWM, percentToExit);
     }
+
     /**
      * Calculates the weighted average of the two given colors
      * @param c0 the one color
@@ -281,6 +290,7 @@ public class MazePanel extends View {
      * @param width is the width of the rectangle
      * @param height is the height of the rectangle
      */
+    @Override
     public void addFilledRectangle(int x, int y, int width, int height) {
         bufferCanvas.drawRect(x, y, x+width, y+height, paint);
     }
@@ -299,6 +309,7 @@ public class MazePanel extends View {
      * @param yPoints are the y-coordinates of points for the polygon
      * @param nPoints is the number of points, the length of the arrays
      */
+    @Override
     public void addFilledPolygon(int[] xPoints, int[] yPoints, int nPoints) {
         addPolygon(xPoints, yPoints, nPoints);
     }
@@ -318,6 +329,7 @@ public class MazePanel extends View {
      * @param yPoints are the y-coordinates of points for the polygon
      * @param nPoints is the number of points, the length of the arrays
      */
+    @Override
     public void addPolygon(int[] xPoints, int[] yPoints, int nPoints) {
         Path polygonPath = new Path();
         polygonPath.moveTo(xPoints[0], yPoints[0]);
@@ -338,6 +350,7 @@ public class MazePanel extends View {
      * @param endX is the x-coordinate of the end point
      * @param endY is the y-coordinate of the end point
      */
+    @Override
     public void addLine(int startX, int startY, int endX, int endY) {
         bufferCanvas.drawLine(startX, startY, endX, endY, paint);
     }
@@ -354,6 +367,7 @@ public class MazePanel extends View {
      * @param width is the width of the oval
      * @param height is the height of the oval
      */
+    @Override
     public void addFilledOval(int x, int y, int width, int height) {
         bufferCanvas.drawOval(x, y, x+width, y+height, paint);
     }
@@ -383,6 +397,7 @@ public class MazePanel extends View {
      * @param startAngle the beginning angle.
      * @param arcAngle the angular extent of the arc, relative to the start angle.
      */
+    @Override
     public void addArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
         //graphics.drawArc(x, y, width, height, startAngle, arcAngle);
         bufferCanvas.drawArc(x, y, x+width, y+height, startAngle, arcAngle, true, paint);
@@ -395,6 +410,7 @@ public class MazePanel extends View {
      * @param y the y coordinate
      * @param str the string
      */
+    @Override
     public void addMarker(float x, float y, String str) {
         //GlyphVector gv = markerFont.createGlyphVector(g2.getFontRenderContext(), str);
         /*
@@ -407,50 +423,4 @@ public class MazePanel extends View {
         graphics.drawGlyphVector(gv, x, y);*/
         bufferCanvas.drawText(str, x, y, paint);
     }
-
-    /**
-     * Sets the value of a single preference for the rendering algorithms.
-     * Hint categories include controls for rendering quality
-     * and overall time/quality trade-off in the rendering process.
-     * Refer to the awt RenderingHints class for definitions of some common keys and values.
-     * @param hintKey the key of the hint to be set.
-     * @param hintValue the value indicating preferences for the specified hint category.
-     */
-    /*
-    public void setRenderingHint(RenderingHints hintKey, RenderingHints hintValue) {
-        java.awt.RenderingHints.Key convertedKey;
-        Object convertedValue = null;
-
-        switch (hintKey) {
-            case KEY_ANTIALIASING:
-                convertedKey = java.awt.RenderingHints.KEY_ANTIALIASING;
-                break;
-            case KEY_INTERPOLATION:
-                convertedKey = java.awt.RenderingHints.KEY_INTERPOLATION;
-                break;
-            case KEY_RENDERING:
-                convertedKey = java.awt.RenderingHints.KEY_RENDERING;
-                break;
-            default:
-                convertedKey = null;
-                break;
-        }
-
-        switch (hintValue) {
-            case VALUE_ANTIALIAS_ON:
-                convertedValue = java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
-                break;
-            case VALUE_INTERPOLATION_BILINEAR:
-                convertedValue = java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-                break;
-            case VALUE_RENDER_QUALITY:
-                convertedValue = java.awt.RenderingHints.VALUE_RENDER_QUALITY;
-                break;
-            default:
-                convertedValue = null;
-                break;
-        }
-
-        graphics.setRenderingHint(convertedKey, convertedValue);
-    }*/
 }

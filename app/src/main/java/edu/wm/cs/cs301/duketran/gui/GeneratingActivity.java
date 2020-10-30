@@ -1,6 +1,11 @@
 package edu.wm.cs.cs301.duketran.gui;
 
 import edu.wm.cs.cs301.duketran.R;
+import edu.wm.cs.cs301.duketran.generation.Factory;
+import edu.wm.cs.cs301.duketran.generation.Maze;
+import edu.wm.cs.cs301.duketran.generation.MazeFactory;
+import edu.wm.cs.cs301.duketran.generation.MazeSingleton;
+import edu.wm.cs.cs301.duketran.generation.Order;
 
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
@@ -15,6 +20,8 @@ import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;import android.content.Intent;
 
+import java.util.Objects;
+
 /**
  * Class: GeneratingActivity
  * <br>
@@ -23,9 +30,19 @@ import androidx.appcompat.app.AppCompatActivity;import android.content.Intent;
  * <br>
  * Collaborators: AMazeActivity
  */
-public class GeneratingActivity extends AppCompatActivity implements Runnable {
+public class GeneratingActivity extends AppCompatActivity implements Runnable, Order {
     private Handler handler;
     private Thread generationThread;
+
+    private int seed;
+    private int skillLevel;
+    private Builder builder;
+    private boolean perfect;
+
+    private Factory factory;
+
+    private int currentProgress;
+    private boolean started;
 
     /**
      * Overrides the onCreate method of Activity, starts the background animation and maze generation
@@ -37,6 +54,8 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generating);
+        // instantiate fields
+        reset();
         // start the background animation
         AnimationDrawable progressAnimation = (AnimationDrawable) findViewById(R.id.parentView).getBackground();
         progressAnimation.start();
@@ -89,6 +108,12 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        reset();
+    }
+
     /**
      * If the user presses the back button, the maze generation thread is stopped and the title
      * activity is notified that the intent was canceled
@@ -98,10 +123,26 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
         super.onBackPressed();
         // stop the maze generation thread
         generationThread.interrupt();
+        factory.cancel();
         // send the canceled intent result back to the title screen
-        GeneratingActivity.this.setResult(RESULT_CANCELED, new Intent(GeneratingActivity.this, AMazeActivity.class));
+        GeneratingActivity.this.setResult(RESULT_CANCELED, null);
         GeneratingActivity.this.finish();
         Log.v("Maze Generation", "Cancelling generation");
+    }
+
+    /**
+     * Resets all the fields to the default values
+     */
+    private void reset() {
+        factory = new MazeFactory() ;
+        skillLevel = 0; // default size for maze
+        builder = Order.Builder.DFS; // default algorithm
+        perfect = false; // default: maze can have rooms
+        currentProgress = 0;
+        started = false;
+        seed = 13; // default: an arbitrary fixed value
+        View minotaurProgress = findViewById(R.id.minotaurProgress);
+        minotaurProgress.getBackground().setLevel(0);
     }
 
     /**
@@ -116,6 +157,41 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
         else robotLayout.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public int getSkillLevel() {
+        return skillLevel;
+    }
+
+    @Override
+    public Builder getBuilder() {
+        return builder;
+    }
+
+    @Override
+    public boolean isPerfect() {
+        return perfect;
+    }
+
+    @Override
+    public int getSeed() {
+        return seed;
+    }
+
+    @Override
+    public void deliver(Maze mazeConfig) {
+        // use a singleton to assign and deliver the maze
+        MazeSingleton.getInstance().setMaze(mazeConfig);
+    }
+
+    @Override
+    public void updateProgress(int percentage) {
+        if (currentProgress < percentage && percentage <= 100) {
+            currentProgress = percentage;
+            View minotaurProgress = findViewById(R.id.minotaurProgress);
+            minotaurProgress.getBackground().setLevel(currentProgress*100);
+        }
+    }
+
     /**
      * Part of the thread that controls the maze generation
      */
@@ -123,28 +199,30 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable {
     public void run() {
         // fetch the intent sent from the title screen containing the skill level, builder, and rooms
         Intent intent = getIntent();
-        Log.v("SkillLevel", ""+intent.getIntExtra("SkillLevel", 0));
-        Log.v("Builder", ""+intent.getStringExtra("Builder"));
-        Log.v("Rooms", ""+intent.getBooleanExtra("Rooms", false));
-        // update the progress as the maze is being generated to keep the user posted
-        View minotaurProgress = findViewById(R.id.minotaurProgress);
-        int currentProgress = 0;
-        while (currentProgress < 100) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                setResult(RESULT_CANCELED, null);
-                finish();
-                return;
-            }
-            // update the progress bar in the UI
-            currentProgress += 15;
-            minotaurProgress.getBackground().setLevel(currentProgress*100);
+        skillLevel = intent.getIntExtra("SkillLevel", 0);
+        switch (Objects.requireNonNull(intent.getStringExtra("Builder"))) {
+            case "Random":
+                builder = Builder.DFS;
+                break;
+            case "Prim":
+                builder = Builder.Prim;
+                break;
+            case "Eller":
+                builder = Builder.Eller;
+                break;
         }
+        perfect = !intent.getBooleanExtra("Rooms", false);
+        factory.order(this);
+        Log.v("SkillLevel", ""+skillLevel);
+        Log.v("Builder", ""+builder);
+        Log.v("Rooms", ""+perfect);
 
         // once the progress reaches 100, update the UI to show the play button
+        factory.waitTillDelivered();
         handler.post(new Runnable() {
             public void run() {
+                Log.v("Maze Generation", "Done!");
+                assert (MazeSingleton.getInstance().getMaze() != null) : "Maze Generation Failed!";
                 Button playButton = findViewById(R.id.playButton);
                 playButton.setVisibility(View.VISIBLE);
             }

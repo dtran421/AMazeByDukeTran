@@ -55,6 +55,17 @@ public class AMazeActivity extends AppCompatActivity {
         setUpNavigationButton((Button) findViewById(R.id.exploreButton));
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SeekBar skillLevelSeekBar = findViewById(R.id.seekBar);
+        skillLevelSeekBar.setProgress(0);
+        Spinner builderSpinner = findViewById(R.id.builderSpinner);
+        builderSpinner.setSelection(0);
+        SwitchMaterial roomSwitch = findViewById(R.id.roomSwitch);
+        roomSwitch.setChecked(false);
+    }
+
     /**
      * Once the maze generation is complete, it returns to this method with the user inputted driver
      * and robot if applicable, then starts the game based on the mode
