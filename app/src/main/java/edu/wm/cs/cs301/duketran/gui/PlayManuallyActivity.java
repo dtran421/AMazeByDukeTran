@@ -49,6 +49,7 @@ public class PlayManuallyActivity extends PlayActivity {
         setUpMoveButtons();
 
         // set up the shortcut button to allow navigation to the winning activity
+        /*
         Button shortcutButton = findViewById(R.id.shortcutButton);
         shortcutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +66,7 @@ public class PlayManuallyActivity extends PlayActivity {
                 startActivity(winningState);
                 finish();
             }
-        });
+        });*/
     }
 
     /**

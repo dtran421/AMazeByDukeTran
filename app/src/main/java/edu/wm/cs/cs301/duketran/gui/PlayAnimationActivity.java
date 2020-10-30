@@ -60,8 +60,9 @@ public class PlayAnimationActivity extends PlayActivity {
         setUpZoomButtons();
         setUpAnimationComponents();
         // set up the endgame buttons with listeners
+        /*
         setUpEndgameButton(true, (Button) findViewById(R.id.winningButton));
-        setUpEndgameButton(false, (Button) findViewById(R.id.losingButton));
+        setUpEndgameButton(false, (Button) findViewById(R.id.losingButton));*/
     }
 
     /**
