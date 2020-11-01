@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -98,6 +99,7 @@ public class AMazeActivity extends AppCompatActivity {
 
                 // make a new toast to alert the user that the game is starting
                 Toast toast = Toast.makeText(AMazeActivity.this, "Loading game...", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 50);
                 toast.show();
                 startActivity(mazeGame);
             }
@@ -134,6 +136,7 @@ public class AMazeActivity extends AppCompatActivity {
                 // make a new toast to alert the user of the new activity, start the new activity
                 // and await the result
                 Toast toast = Toast.makeText(AMazeActivity.this, "Generating maze...", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 50);
                 toast.show();
                 startActivityForResult(mazeGeneration, KEY_GENERATION);
             }

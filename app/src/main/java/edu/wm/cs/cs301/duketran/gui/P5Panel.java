@@ -1,5 +1,7 @@
 package edu.wm.cs.cs301.duketran.gui;
 
+import android.graphics.Color;
+
 /**
  * Provides an adapter for a graphics object for the first person view
  * and the map view to draw on. 
@@ -29,14 +31,14 @@ public interface P5Panel {
 	/**
      * Default minimum value for RGB values.
      */
-    static final int RGB_DEF = 20;
-    static final int RGB_DEF_GREEN = 60;
+    int RGB_DEF = 20;
+    int RGB_DEF_GREEN = 60;
 	
 	/**
 	 * Commits all accumulated drawings to the UI.
 	 * Substitute for MazePanel.update method. 
 	 */
-	public void commit();
+	void commit();
 	
 	/**
 	 * Tells if instance is able to draw. This ability depends on the
@@ -45,7 +47,7 @@ public interface P5Panel {
 	 * Substitute for code that checks if graphics object for drawing is not null.
 	 * @return true if drawing is possible, false if not.
 	 */
-	public boolean isOperational();
+	boolean isOperational();
 	
 	/**
 	 * Sets the color for future drawing requests. The color setting
@@ -54,13 +56,13 @@ public interface P5Panel {
 	 * Substitute for Graphics.setColor method.
 	 * @param rgb gives the red green and blue encoded value of the color
 	 */
-	public void setColor(int rgb);
+	void setColor(int rgb);
 	
     /**
      * Returns the RGB value for the current color setting. 
      * @return integer RGB value
      */
-    public int getColor();
+    int getColor();
     
     /**
      * Determines the color for a wall.
@@ -78,34 +80,26 @@ public interface P5Panel {
         String newHex;
         switch (((d >> 3) ^ cc) % 6) {
         case 0:
-        	newHex = String.format("%02X%02X%02X", rgbValue, RGB_DEF, RGB_DEF);  
-            return Integer.parseInt(newHex,16);
+            return Color.rgb(rgbValue, RGB_DEF, RGB_DEF);
         case 1:
-        	newHex = String.format("%02X%02X%02X", RGB_DEF, RGB_DEF_GREEN, RGB_DEF);  
-            return Integer.parseInt(newHex,16);
+            return Color.rgb(RGB_DEF, RGB_DEF_GREEN, RGB_DEF);
         case 2:
-        	newHex = String.format("%02X%02X%02X", RGB_DEF, RGB_DEF, rgbValue);  
-            return Integer.parseInt(newHex,16);
+            return Color.rgb(RGB_DEF, RGB_DEF, rgbValue);
         case 3:
-        	newHex = String.format("%02X%02X%02X", rgbValue, RGB_DEF_GREEN, RGB_DEF);  
-            return Integer.parseInt(newHex,16);
+            return Color.rgb(rgbValue, RGB_DEF_GREEN, RGB_DEF);
         case 4:
-        	newHex = String.format("%02X%02X%02X", RGB_DEF, RGB_DEF_GREEN, rgbValue);  
-            return Integer.parseInt(newHex,16);
+            return Color.rgb(RGB_DEF, RGB_DEF_GREEN, rgbValue);
         case 5:
-        	newHex = String.format("%02X%02X%02X", rgbValue, RGB_DEF, rgbValue);  
-            return Integer.parseInt(newHex,16);
+            return Color.rgb(rgbValue, RGB_DEF, rgbValue);
         default:
-        	newHex = String.format("%02X%02X%02X", RGB_DEF, RGB_DEF, RGB_DEF);  
-            return Integer.parseInt(newHex,16);
+            return Color.rgb(RGB_DEF, RGB_DEF, RGB_DEF);
         }
 	}
 	
 	/**
      * Computes an RGB value based on the given numerical value.
      *
-     * @param distance
-     *            value to select color
+     * @param distance value to select color
      * @return the calculated RGB value
      */
 	static int calculateRGBValue(final int distance, final int extensionX) {
@@ -114,8 +108,7 @@ public interface P5Panel {
         // use AND to get last 3 digits of distance
         final int part1 = distance & 7;
         final int add = (extensionX != 0) ? 1 : 0;
-        final int rgbValue = ((part1 + 2 + add) * 70) / 8 + 80;
-        return rgbValue;
+        return ((part1 + 2 + add) * 70) / 8 + 80;
     }
     
 	/**
@@ -127,7 +120,7 @@ public interface P5Panel {
 	 * Substitute for FirstPersonView.drawBackground method.
 	 * @param percentToExit gives the distance to exit
 	 */
-	public void addBackground(float percentToExit);
+	void addBackground(float percentToExit);
 
     /**
      * Adds a filled rectangle. 
@@ -140,7 +133,7 @@ public interface P5Panel {
      * @param width is the width of the rectangle
      * @param height is the height of the rectangle
      */
-    public void addFilledRectangle(int x, int y, int width, int height);
+    void addFilledRectangle(int x, int y, int width, int height);
     
     /**
      * Adds a filled polygon. 
@@ -156,7 +149,7 @@ public interface P5Panel {
      * @param yPoints are the y-coordinates of points for the polygon
      * @param nPoints is the number of points, the length of the arrays
      */
-    public void addFilledPolygon(int[] xPoints, int[] yPoints, int nPoints);
+    void addFilledPolygon(int[] xPoints, int[] yPoints, int nPoints);
     
     /**
      * Adds a polygon.
@@ -173,7 +166,7 @@ public interface P5Panel {
      * @param yPoints are the y-coordinates of points for the polygon
      * @param nPoints is the number of points, the length of the arrays
      */
-    public void addPolygon(int[] xPoints, int[] yPoints, int nPoints);
+    void addPolygon(int[] xPoints, int[] yPoints, int nPoints);
     
     /**
      * Adds a line. 
@@ -185,7 +178,7 @@ public interface P5Panel {
      * @param endX is the x-coordinate of the end point
      * @param endY is the y-coordinate of the end point
      */
-    public void addLine(int startX, int startY, int endX, int endY);
+    void addLine(int startX, int startY, int endX, int endY);
     
     /**
      * Adds a filled oval.
@@ -199,7 +192,7 @@ public interface P5Panel {
      * @param width is the width of the oval
      * @param height is the height of the oval
      */
-    public void addFilledOval(int x, int y, int width, int height);
+    void addFilledOval(int x, int y, int width, int height);
     /**
      * Adds the outline of a circular or elliptical arc covering the specified rectangle.
      * The resulting arc begins at startAngle and extends for arcAngle degrees, 
@@ -225,7 +218,7 @@ public interface P5Panel {
      * @param startAngle the beginning angle.
      * @param arcAngle the angular extent of the arc, relative to the start angle.
      */
-    public void addArc(int x, int y, int width, int height, int startAngle, int arcAngle) ;
+    void addArc(int x, int y, int width, int height, int startAngle, int arcAngle) ;
     /**
      * Adds a string at the given position.
      * Substitute for CompassRose.drawMarker method 
@@ -233,5 +226,5 @@ public interface P5Panel {
      * @param y the y coordinate
      * @param str the string
      */
-    public void addMarker(float x, float y, String str) ;
+    void addMarker(float x, float y, String str) ;
 }

@@ -114,7 +114,7 @@ public class PlayAnimationActivity extends PlayActivity {
                 // create a new intent containing the mode, path length, shortest path, and
                 // energy consumption
                 endgameState.putExtra("Manual", false);
-                endgameState.putExtra("Path Length", pathLength);
+                //endgameState.putExtra("Path Length", pathLength);
                 endgameState.putExtra("Shortest Path", shortestPath);
                 endgameState.putExtra("Energy Consumption", energyConsumption);
                 Log.v("Animation Play", winning ? "Proceeding to WinningActivity" : "Proceeding to LosingActivity");

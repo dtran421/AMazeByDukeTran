@@ -3,12 +3,13 @@ package edu.wm.cs.cs301.duketran.gui;
 import java.util.Objects;
 
 import edu.wm.cs.cs301.duketran.R;
+import edu.wm.cs.cs301.duketran.generation.MazeSingleton;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -33,7 +34,9 @@ public class PlayManuallyActivity extends PlayActivity {
         // the title activity
         Intent mazeGame = getIntent();
         Log.v("Game driver", Objects.requireNonNull(mazeGame.getStringExtra("Driver")));
-        Log.v("Game maze", Objects.requireNonNull(mazeGame.getStringExtra("Maze")));
+        statePlaying = new StatePlaying();
+        statePlaying.setMazeConfiguration(MazeSingleton.getInstance().getMaze());
+        statePlaying.start(this, findViewById(R.id.mazePanel));
         // set up the path length text view and UI buttons
         setPathLength();
         setUpButtons();
@@ -47,26 +50,6 @@ public class PlayManuallyActivity extends PlayActivity {
         setUpMenuButton(this);
         setUpZoomButtons();
         setUpMoveButtons();
-
-        // set up the shortcut button to allow navigation to the winning activity
-        /*
-        Button shortcutButton = findViewById(R.id.shortcutButton);
-        shortcutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // create a new intent containing the play mode, the path length, and the shortest path
-                Intent winningState = new Intent(PlayManuallyActivity.this, WinningActivity.class);
-                winningState.putExtra("Manual", true);
-                winningState.putExtra("Path Length", pathLength);
-                winningState.putExtra("Shortest Path", shortestPath);
-                Log.v("Manual Play", "Proceeding to WinningActivity");
-                // create a new toast to notify the user that they've won and start the winning activity
-                Toast toast = Toast.makeText(PlayManuallyActivity.this, "You escaped!", Toast.LENGTH_SHORT);
-                toast.show();
-                startActivity(winningState);
-                finish();
-            }
-        });*/
     }
 
     /**
@@ -74,29 +57,51 @@ public class PlayManuallyActivity extends PlayActivity {
      */
     private void setUpMoveButtons() {
         ImageView forwardButton = findViewById(R.id.forwardButton);
-        setUpMovementButton(forwardButton);
+        setUpMovementButton(forwardButton, Constants.UserInput.Up);
         ImageView rightButton = findViewById(R.id.rightButton);
-        setUpMovementButton(rightButton);
+        setUpMovementButton(rightButton, Constants.UserInput.Right);
         ImageView backButton = findViewById(R.id.backwardButton);
-        setUpMovementButton(backButton);
+        setUpMovementButton(backButton, Constants.UserInput.Down);
         ImageView leftButton = findViewById(R.id.leftButton);
-        setUpMovementButton(leftButton);
+        setUpMovementButton(leftButton, Constants.UserInput.Left);
         ImageView jumpButton = findViewById(R.id.jumpButton);
-        setUpMovementButton(jumpButton);
+        setUpMovementButton(jumpButton, Constants.UserInput.Jump);
     }
 
     /**
      * Sets up a listener for the given button
      * @param button the ImageView object of the button being set up
      */
-    private void setUpMovementButton(ImageView button) {
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // update the path length when the given button is clicked
-                pathLength += 1;
-                setPathLength();
-            }
-        });
+    private void setUpMovementButton(ImageView button, Constants.UserInput dir) {
+        if (dir == Constants.UserInput.Left || dir == Constants.UserInput.Right) {
+            button.setOnClickListener(v -> {
+                statePlaying.keyDown(dir, 0);
+                Log.v("Turn", dir.toString());
+            });
+        } else {
+            button.setOnClickListener(v -> {
+                int origDist = statePlaying.distTraveled;
+                statePlaying.keyDown(dir, 0);
+                Log.v("Move", dir.toString());
+                // update the path length after successful move
+                if (statePlaying.distTraveled > origDist) {
+                    setPathLength();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void switchToWinning(Context context, int distTraveled) {
+        super.switchToWinning(context, distTraveled);
+        // create a new intent containing the play mode, the path length, and the shortest path
+        winningState.putExtra("Manual", true);
+        Log.v("Manual Play", "Proceeding to WinningActivity");
+        // create a new toast to notify the user that they've won and start the winning activity
+        Toast toast = Toast.makeText(PlayManuallyActivity.this, "You escaped!", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 50);
+        toast.show();
+        startActivity(winningState);
+        finish();
     }
 }

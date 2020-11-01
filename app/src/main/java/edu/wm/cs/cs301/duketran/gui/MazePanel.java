@@ -3,6 +3,7 @@ package edu.wm.cs.cs301.duketran.gui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -26,19 +27,17 @@ public class MazePanel extends View implements P5Panel {
     // has benefits if color settings should be remembered for subsequent drawing operations
 
     //private static final Color greenWM = Color.decode("#115740");
-    static final int greenWM = 1136448;
+    static final int greenWM = Color.rgb(17, 87, 64); // 1136448
     //private static final Color goldWM = Color.decode("#916f41");
-    static final int goldWM = 9531201;
-    static final int yellowWM = 16777113;
+    static final int goldWM = Color.rgb(145, 111, 65); // 9531201
+    static final int yellowWM = Color.rgb(255, 255, 153); // 16777113
 
-    static final int WHITE = 16777215;
-    static final int LIGHT_GRAY = 13421772;
-    static final int GRAY = 10066329;
-    static final int RED = 16711680;
-    static final int YELLOW = 16776960;
-
-    static final int RGB_DEF = 20;
-    static final int RGB_DEF_GREEN = 60;
+    static final int WHITE = Color.WHITE;
+    static final int LIGHT_GRAY = Color.LTGRAY;
+    static final int GRAY = Color.GRAY;
+    static final int BLACK = Color.BLACK;
+    static final int RED = Color.RED;
+    static final int YELLOW = Color.YELLOW;
 
     /**
      * Dimensions for the FirstPersonView
@@ -51,32 +50,32 @@ public class MazePanel extends View implements P5Panel {
 
     public MazePanel(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        bufferBitmap = null;
-        bufferCanvas = null;
-        paint = null;
-        update();
+        bufferBitmap = Bitmap.createBitmap(Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT, Bitmap.Config.ARGB_8888);
+        bufferCanvas = new Canvas(bufferBitmap);
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Log.v("Draw status", "Working...");
-        canvas.drawColor(Color.LTGRAY);
-        myTestImage(canvas);
+        Log.v("MazePanel", "Redrawing...");
+        //canvas.drawColor(Color.LTGRAY);
+        //myTestImage(canvas);
+        update(canvas);
     }
 
     private void myTestImage(Canvas c) {
+        c.drawColor(Color.LTGRAY);
         setColor(Color.RED);
-        addFilledOval(0, 0, 100, 100);
-        setColor(Color.GREEN);
-        addFilledOval(0, 100, 100, 100);
+        addFilledOval(0, 0, 400, 400);
+        setColor(greenWM);
+        addFilledOval(400, 0, 400, 400);
         setColor(Color.YELLOW);
-        addFilledRectangle(100, 0, 100, 100);
+        addFilledRectangle(800, 0, 400, 400);
         setColor(Color.BLUE);
         int[] xPoints = {150, 101, 125, 175, 200};
         int[] yPoints = {100, 125, 200, 200, 125};
@@ -93,13 +92,15 @@ public class MazePanel extends View implements P5Panel {
     }
 
     /**
-     * Method to draw the buffer image on a graphics object that is
-     * obtained from the superclass.
-     * Warning: do not override getGraphics() or drawing might fail.
+     * Method to draw the buffer image on the buffer canvas object.
      */
-    public void update() {
-        paint(getBufferCanvas());
-    }
+    public void update() { paint(bufferCanvas); }
+
+    /**
+     * Commits all accumulated drawings to the UI.
+     * Substitute for View.invalidate method.
+     */
+    public void commit() { invalidate(); }
 
     /**
      * Draws the buffer image to the given graphics object.
@@ -113,46 +114,9 @@ public class MazePanel extends View implements P5Panel {
         }
         else {
             canvas.drawBitmap(bufferBitmap, 0, 0, paint);
-        }
-    }
-
-    /**
-     * Obtains a graphics object that can be used for drawing.
-     * This MazePanel object internally stores the graphics object
-     * and will return the same graphics object over multiple method calls.
-     * The graphics object acts like a notepad where all clients draw
-     * on to store their contribution to the overall image that is to be
-     * delivered later.
-     * To make the drawing visible on screen, one needs to trigger
-     * a call of the paint method, which happens
-     * when calling the update method.
-     * @return graphics object to draw on, null if impossible to obtain image
-     */
-
-    public Canvas getBufferCanvas() {
-        if (null == bufferCanvas) {
-            // if necessary instantiate and store a bitmap object for later use
-            if (null == bufferBitmap) {
-                // (Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT);
-                bufferBitmap = Bitmap.createBitmap(350, 350, Bitmap.Config.ARGB_8888);
-                if (null == bufferBitmap) {
-                    Log.e("Buffer Bitmap Error", "Creation of buffered bitmap failed, presumably container not displayable");
-                    return null; // still no buffer image, give up
-                }
-            }
+            bufferBitmap = Bitmap.createBitmap(Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT, Bitmap.Config.ARGB_8888);
             bufferCanvas = new Canvas(bufferBitmap);
-            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         }
-        return bufferCanvas;
-    }
-
-    /**
-     * Commits all accumulated drawings to the UI.
-     * Substitute for MazePanel.update method.
-     */
-    @Override
-    public void commit() {
-        update();
     }
 
     /**
@@ -164,7 +128,7 @@ public class MazePanel extends View implements P5Panel {
      */
     @Override
     public boolean isOperational() {
-        if (null == getBufferCanvas()) {
+        if (null == bufferCanvas) {
             Log.e("MazePanel", "Can't get buffer canvas object to draw on, skipping draw operation");
             return false;
         }
@@ -198,7 +162,8 @@ public class MazePanel extends View implements P5Panel {
      * @param font name
      */
     public void setFont(String font) {
-        currentFont = Typeface.create(font, Typeface.NORMAL);//paint.setTypeface(Typeface.create(font, Typeface.NORMAL));
+        currentFont = Typeface.create(font, Typeface.NORMAL);
+        paint.setTypeface(Typeface.create(font, Typeface.NORMAL));
     }
 
     /**
@@ -227,13 +192,9 @@ public class MazePanel extends View implements P5Panel {
      */
     @Override
     public void addBackground(float percentToExit) {
-        // black rectangle in upper half of screen
-        // graphics.setColor(Color.black);
         // dynamic color setting:
         setColor(getBackgroundColor(percentToExit, true));
         addFilledRectangle(0, 0, viewWidth, viewHeight/2);
-        // grey rectangle in lower half of screen
-        // graphics.setColor(Color.darkGray);
         // dynamic color setting:
         setColor(getBackgroundColor(percentToExit, false));
         addFilledRectangle(0, viewHeight/2, viewWidth, viewHeight/2);
@@ -265,18 +226,12 @@ public class MazePanel extends View implements P5Panel {
             return c1;
         if (weight0 > 0.95)
             return c0;
-        String hex0 = String.format("%06X", c0);
-        String hex1 = String.format("%06X", c1);
 
-        int r = (int) (weight0 * ((int)Long.parseLong(hex0.substring(0, 2), 16)) +
-                (1-weight0) * ((int)Long.parseLong(hex1.substring(0, 2), 16)));
-        int g = (int) (weight0 * ((int)Long.parseLong(hex0.substring(2, 4), 16)) +
-                (1-weight0) * ((int)Long.parseLong(hex1.substring(2, 4), 16)));
-        int b = (int) (weight0 * ((int)Long.parseLong(hex0.substring(4, 6), 16)) +
-                (1-weight0) * ((int)Long.parseLong(hex1.substring(4, 6), 16)));
+        int r = (int) (weight0 * Color.red(c0) + (1-weight0) * Color.red(c1));
+        int g = (int) (weight0 * Color.green(c0) + (1-weight0) * Color.green(c1));
+        int b = (int) (weight0 * Color.blue(c0) + (1-weight0) * Color.blue(c1));
 
-        String newHex = String.format("%02X%02X%02X", r, g, b);
-        return Integer.parseInt(newHex,16);
+        return Color.rgb(r, g, b);
     }
 
     /**
@@ -332,6 +287,7 @@ public class MazePanel extends View implements P5Panel {
     @Override
     public void addPolygon(int[] xPoints, int[] yPoints, int nPoints) {
         Path polygonPath = new Path();
+        paint.setStrokeWidth(5);
         polygonPath.moveTo(xPoints[0], yPoints[0]);
         for (int i = 1; i < nPoints; i++) {
             polygonPath.lineTo(xPoints[i], yPoints[i]);
@@ -352,6 +308,7 @@ public class MazePanel extends View implements P5Panel {
      */
     @Override
     public void addLine(int startX, int startY, int endX, int endY) {
+        paint.setStrokeWidth(5);
         bufferCanvas.drawLine(startX, startY, endX, endY, paint);
     }
 
@@ -412,15 +369,13 @@ public class MazePanel extends View implements P5Panel {
      */
     @Override
     public void addMarker(float x, float y, String str) {
-        //GlyphVector gv = markerFont.createGlyphVector(g2.getFontRenderContext(), str);
-        /*
-        GlyphVector gv = getFont().createGlyphVector(graphics.getFontRenderContext(), str);
-        Rectangle2D rect = gv.getVisualBounds();
+        Rect rect = new Rect();
+        paint.getTextBounds(str, 0, str.length(), rect);
 
-        x -= rect.getWidth() / 2;
-        y += rect.getHeight() / 2;
+        x -= rect.width() / 2.0;
+        y += rect.height() / 2.0;
 
-        graphics.drawGlyphVector(gv, x, y);*/
+        paint.setTextSize(75);
         bufferCanvas.drawText(str, x, y, paint);
     }
 }
