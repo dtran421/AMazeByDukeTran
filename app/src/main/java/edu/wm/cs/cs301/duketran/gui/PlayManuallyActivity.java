@@ -38,7 +38,7 @@ public class PlayManuallyActivity extends PlayActivity {
         statePlaying.setMazeConfiguration(MazeSingleton.getInstance().getMaze());
         statePlaying.start(this, findViewById(R.id.mazePanel));
         // set up the path length text view and UI buttons
-        setPathLength();
+        setPathLength(statePlaying.distTraveled);
         setUpButtons();
     }
 
@@ -85,7 +85,7 @@ public class PlayManuallyActivity extends PlayActivity {
                 Log.v("Move", dir.toString());
                 // update the path length after successful move
                 if (statePlaying.distTraveled > origDist) {
-                    setPathLength();
+                    setPathLength(statePlaying.distTraveled);
                 }
             });
         }

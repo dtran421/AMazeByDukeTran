@@ -122,11 +122,11 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
     public void onBackPressed() {
         super.onBackPressed();
         // stop the maze generation thread
-        generationThread.interrupt();
         factory.cancel();
+        generationThread.interrupt();
         // send the canceled intent result back to the title screen
-        GeneratingActivity.this.setResult(RESULT_CANCELED, null);
-        GeneratingActivity.this.finish();
+        setResult(RESULT_CANCELED, null);
+        finish();
         Log.v("Maze Generation", "Cancelling generation");
     }
 
@@ -140,6 +140,7 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
         perfect = false; // default: maze can have rooms
         currentProgress = 0;
         started = false;
+        // TODO: change this to a random seed!
         seed = 13; // default: an arbitrary fixed value
         View minotaurProgress = findViewById(R.id.minotaurProgress);
         minotaurProgress.getBackground().setLevel(0);

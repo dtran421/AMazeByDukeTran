@@ -24,6 +24,7 @@ import androidx.appcompat.widget.PopupMenu;
 public class PlayActivity extends AppCompatActivity {
     protected StatePlaying statePlaying;
     protected Intent winningState;
+    protected RobotDriver driver = null;
 
     protected boolean showMap = false;
     protected boolean showSolution = false;
@@ -33,13 +34,21 @@ public class PlayActivity extends AppCompatActivity {
     protected int shortestPath = 69;
 
     /**
+     * Public accessor for the robot driver
+     * @return driver
+     */
+    public RobotDriver getDriver() {
+        return driver;
+    }
+
+    /**
      * Updates the path length text view on the UI
      */
-    protected void setPathLength() {
+    protected void setPathLength(int pathLength) {
         Resources res = getResources();
         String pathLengthString = res.getString(R.string.pathLengthText);
         TextView pathLengthText = findViewById(R.id.pathLengthText);
-        pathLengthText.setText(String.format(pathLengthString, statePlaying.distTraveled));
+        pathLengthText.setText(String.format(pathLengthString, pathLength));
     }
 
     /**
