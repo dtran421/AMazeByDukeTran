@@ -1,12 +1,9 @@
 package edu.wm.cs.cs301.duketran.gui;
 
-import java.util.Objects;
-
 import edu.wm.cs.cs301.duketran.R;
 import edu.wm.cs.cs301.duketran.generation.MazeSingleton;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -32,8 +29,8 @@ public class PlayManuallyActivity extends PlayActivity {
         setContentView(R.layout.activity_play_manual);
         // obtain the intent containing the driver (no robot in manual mode) and maze sent from
         // the title activity
-        Intent mazeGame = getIntent();
-        Log.v("Game driver", Objects.requireNonNull(mazeGame.getStringExtra("Driver")));
+        Bundle gameSettings = getIntent().getExtras();
+        Log.v("Game driver", gameSettings.getString("Driver"));
         statePlaying = new StatePlaying();
         statePlaying.setMazeConfiguration(MazeSingleton.getInstance().getMaze());
         statePlaying.start(this, findViewById(R.id.mazePanel));

@@ -1,10 +1,11 @@
 package edu.wm.cs.cs301.duketran.gui;
 
-import java.util.Objects;
 import edu.wm.cs.cs301.duketran.R;
+import edu.wm.cs.cs301.duketran.generation.SingleRandom;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,14 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 public class AMazeActivity extends AppCompatActivity {
     private static final int KEY_GENERATION = 1;
 
+    private int skillLevel;
+    private String builder;
+    private boolean rooms;
+    private int seed;
+
+    private final int mode = Activity.MODE_PRIVATE;
+    private SharedPreferences mazePreferences;
+
     /**
      * Overrides the onCreate method of Activity, starts the background animation, fills the builder
      * spinner with the builder options, sets up the navigation buttons (to start maze generation)
@@ -44,6 +53,7 @@ public class AMazeActivity extends AppCompatActivity {
         AnimationDrawable progressAnimation = (AnimationDrawable) findViewById(R.id.parentView).getBackground();
         progressAnimation.start();
         Log.v("App Launch", "Successful");
+        mazePreferences = getPreferences(mode);
 
         // fill the builder spinner with the builder options
         Spinner builderSpinner = findViewById(R.id.builderSpinner);
@@ -52,8 +62,8 @@ public class AMazeActivity extends AppCompatActivity {
         builderSpinner.setAdapter(adapter);
 
         // set up the listeners for the buttons to start the maze generation
-        setUpNavigationButton((Button) findViewById(R.id.revisitButton));
-        setUpNavigationButton((Button) findViewById(R.id.exploreButton));
+        setUpNavigationButton((Button) findViewById(R.id.revisitButton), "Revisit");
+        setUpNavigationButton((Button) findViewById(R.id.exploreButton), "Explore");
     }
 
     @Override
@@ -85,10 +95,17 @@ public class AMazeActivity extends AppCompatActivity {
                 Bundle mazeData = data.getExtras();
                 // obtain the driver, robot, and maze from the maze data
                 assert(mazeData != null) : "Error: mazeData is not supposed to be null!";
-                String driver = Objects.requireNonNull(mazeData.get("Driver")).toString();
-                String robot = Objects.requireNonNull(mazeData.get("Robot")).toString();
+                String driver = mazeData.getString("Driver");
+                String robot = mazeData.getString("Robot");
+                int seed = mazeData.getInt("Seed");
                 Log.v("Inputted Driver", driver);
                 Log.v("Inputted Robot", robot);
+                Log.v("Generation Seed", ""+seed);
+
+                // save maze generation settings to shared preferences
+                SharedPreferences.Editor editor = mazePreferences.edit();
+                editor.putInt(skillLevel+"_"+builder+"_"+rooms, seed);
+                editor.apply();
 
                 // make a new intent for the game containing the driver, robot, and maze
                 Intent mazeGame = new Intent(AMazeActivity.this,
@@ -113,25 +130,30 @@ public class AMazeActivity extends AppCompatActivity {
      * Sets up the listeners for the navigation buttons in charge of starting the maze generation
      * @param navigationButton the button for which the listener is being set
      */
-    public void setUpNavigationButton(Button navigationButton) {
-        // TODO: implement different functions for the Revisit and Explore buttons
+    public void setUpNavigationButton(Button navigationButton, String function) {
         navigationButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 // obtain the selected skill level
                 SeekBar skillLevelSeekBar = findViewById(R.id.seekBar);
-                int skillLevel = skillLevelSeekBar.getProgress();
+                skillLevel = skillLevelSeekBar.getProgress();
                 // obtain the selected builder
                 Spinner builderSpinner = findViewById(R.id.builderSpinner);
-                String builder = builderSpinner.getSelectedItem().toString();
+                builder = builderSpinner.getSelectedItem().toString();
                 // obtain the selection for whether rooms are going to be present
                 SwitchMaterial roomSwitch = findViewById(R.id.roomSwitch);
-                boolean rooms = roomSwitch.isChecked();
+                rooms = roomSwitch.isChecked();
+                // if we're revisiting a maze, find the stored seed
+                if (function.equals("Revisit"))
+                    seed = mazePreferences.getInt(skillLevel+"_"+builder+"_"+rooms, 13);
+                // otherwise, generate a random value for the seed
+                else seed = SingleRandom.getRandom().nextInt();
 
                 // create a new intent and fill it with the inputted data
                 Intent mazeGeneration = new Intent(AMazeActivity.this, GeneratingActivity.class);
                 mazeGeneration.putExtra("SkillLevel", skillLevel);
                 mazeGeneration.putExtra("Builder", builder);
                 mazeGeneration.putExtra("Rooms", rooms);
+                mazeGeneration.putExtra("Seed", seed);
 
                 // make a new toast to alert the user of the new activity, start the new activity
                 // and await the result

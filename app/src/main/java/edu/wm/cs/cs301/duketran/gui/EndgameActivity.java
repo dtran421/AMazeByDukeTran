@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,23 +27,23 @@ public class EndgameActivity extends AppCompatActivity {
      * @param context for which the components are being set up
      */
     protected void setUpComponents(final Context context, final boolean winning) {
-        Intent endgameState = getIntent();
+        Bundle endgameData = getIntent().getExtras();
         Resources res = getResources();
         // format the shortest path data into the text view
         String shortestPathString = res.getString(R.string.shortestPathText);
         TextView shortestPathText = findViewById(R.id.shortestPathText);
-        shortestPathText.setText(String.format(shortestPathString, endgameState.getIntExtra("Shortest Path", 0)));
+        shortestPathText.setText(String.format(shortestPathString, endgameData.getInt("Shortest Path", 0)));
         // format the path length data into the text view
         String pathLengthString = res.getString(R.string.pathLengthText);
         TextView pathLengthText = findViewById(R.id.pathLengthText);
-        pathLengthText.setText(String.format(pathLengthString, endgameState.getIntExtra("Path Length", 0)));
+        pathLengthText.setText(String.format(pathLengthString, endgameData.getInt("Path Length", 0)));
         // if the game was not played in manual mode, format the energy consumption data into the text view
-        if (!endgameState.getBooleanExtra("Manual", true)) {
+        if (!endgameData.getBoolean("Manual", true)) {
             String totalEnergyConsumptionText = res.getString(R.string.totalEnergyConsumptionText);
             TextView energyConsumptionText = findViewById(R.id.energyConsumptionText);
             energyConsumptionText.setVisibility(View.VISIBLE);
             // obtain the float data from the intent and format it to show 1 decimal place
-            String energyConsumption = String.format(Locale.US, "%.1f", endgameState.getFloatExtra("Energy Consumption", 0));
+            String energyConsumption = String.format(Locale.US, "%.1f", endgameData.getFloat("Energy Consumption", 0));
             energyConsumptionText.setText(String.format(totalEnergyConsumptionText, energyConsumption));
         }
         // create a new listener for the new quest button to navigate to the title activity

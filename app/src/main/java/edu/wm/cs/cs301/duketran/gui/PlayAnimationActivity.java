@@ -50,9 +50,9 @@ public class PlayAnimationActivity extends PlayActivity {
 
         // obtain the intent containing the driver, robot, and maze sent from
         // the title activity
-        Intent mazeGame = getIntent();
-        String driver = mazeGame.getStringExtra("Driver");
-        String robot = mazeGame.getStringExtra("Robot");
+        Bundle mazeGame = getIntent().getExtras();
+        String driver = mazeGame.getString("Driver");
+        String robot = mazeGame.getString("Robot");
         Log.v("Game driver", driver);
         Log.v("Game robot", robot);
 
