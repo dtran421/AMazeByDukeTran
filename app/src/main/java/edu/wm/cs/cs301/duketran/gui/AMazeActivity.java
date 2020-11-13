@@ -53,6 +53,7 @@ public class AMazeActivity extends AppCompatActivity {
         AnimationDrawable progressAnimation = (AnimationDrawable) findViewById(R.id.parentView).getBackground();
         progressAnimation.start();
         Log.v("App Launch", "Successful");
+        // fetch the shared preferences object for the maze settings
         mazePreferences = getPreferences(mode);
 
         // fill the builder spinner with the builder options
@@ -66,6 +67,10 @@ public class AMazeActivity extends AppCompatActivity {
         setUpNavigationButton((Button) findViewById(R.id.exploreButton), "Explore");
     }
 
+    /**
+     * Resets the settings to default values when moving on from the title screen
+     * (stops and goes into the background)
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -93,7 +98,7 @@ public class AMazeActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 // obtain maze data from the data bundle
                 Bundle mazeData = data.getExtras();
-                // obtain the driver, robot, and maze from the maze data
+                // obtain the driver, robot, and seed from the maze data
                 assert(mazeData != null) : "Error: mazeData is not supposed to be null!";
                 String driver = mazeData.getString("Driver");
                 String robot = mazeData.getString("Robot");
@@ -101,27 +106,24 @@ public class AMazeActivity extends AppCompatActivity {
                 Log.v("Inputted Driver", driver);
                 Log.v("Inputted Robot", robot);
                 Log.v("Generation Seed", ""+seed);
-
                 // save maze generation settings to shared preferences
                 SharedPreferences.Editor editor = mazePreferences.edit();
                 editor.putInt(skillLevel+"_"+builder+"_"+rooms, seed);
                 editor.apply();
 
                 // make a new intent for the game containing the driver, robot, and maze
-                Intent mazeGame = new Intent(AMazeActivity.this,
+                Intent mazeGame = new Intent(this,
                         (driver.equals("Manual") ? PlayManuallyActivity.class : PlayAnimationActivity.class));
                 mazeGame.putExtra("Driver", driver);
                 mazeGame.putExtra("Robot", robot);
-                mazeGame.putExtra("Maze", "");
-
                 // make a new toast to alert the user that the game is starting
-                Toast toast = Toast.makeText(AMazeActivity.this, "Loading game...", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(this, "Loading game...", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 50);
                 toast.show();
                 startActivity(mazeGame);
             }
-            // if the user exited the activity (canceled the intent), then do nothing
-            else if (resultCode == Activity.RESULT_CANCELED) {
+            // if the user exited the maze generation (canceled the intent), then do nothing
+            else {
                 Log.w("Maze Generation", "Canceled");
             }
     }
@@ -144,7 +146,7 @@ public class AMazeActivity extends AppCompatActivity {
                 rooms = roomSwitch.isChecked();
                 // if we're revisiting a maze, find the stored seed
                 if (function.equals("Revisit"))
-                    seed = mazePreferences.getInt(skillLevel+"_"+builder+"_"+rooms, 13);
+                    seed = mazePreferences.getInt(skillLevel+"_"+builder+"_"+rooms, SingleRandom.getRandom().nextInt());
                 // otherwise, generate a random value for the seed
                 else seed = SingleRandom.getRandom().nextInt();
 
@@ -154,7 +156,6 @@ public class AMazeActivity extends AppCompatActivity {
                 mazeGeneration.putExtra("Builder", builder);
                 mazeGeneration.putExtra("Rooms", rooms);
                 mazeGeneration.putExtra("Seed", seed);
-
                 // make a new toast to alert the user of the new activity, start the new activity
                 // and await the result
                 Toast toast = Toast.makeText(AMazeActivity.this, "Generating maze...", Toast.LENGTH_SHORT);

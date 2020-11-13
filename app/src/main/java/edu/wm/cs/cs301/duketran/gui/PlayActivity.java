@@ -23,7 +23,7 @@ import androidx.appcompat.widget.PopupMenu;
  */
 public class PlayActivity extends AppCompatActivity {
     protected StatePlaying statePlaying;
-    protected Intent winningState;
+    protected Intent endgameData;
     protected RobotDriver driver = null;
 
     protected boolean showMap = false;
@@ -32,14 +32,6 @@ public class PlayActivity extends AppCompatActivity {
 
     protected int zoom = 100;
     protected int shortestPath = 69;
-
-    /**
-     * Public accessor for the robot driver
-     * @return driver
-     */
-    public RobotDriver getDriver() {
-        return driver;
-    }
 
     /**
      * Updates the path length text view on the UI
@@ -66,7 +58,6 @@ public class PlayActivity extends AppCompatActivity {
             MenuInflater inflater = popup.getMenuInflater();
             inflater.inflate(R.menu.menu_game, popup.getMenu());
             popup.show();
-
             // update the menu with the options that have been previously defined or set
             // (since the menu is automatically reset and closed after a selection is made)
             Menu menu = popup.getMenu();
@@ -77,8 +68,8 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     /**
-     * Sets up the popup by with a listener
-     * @param popup PopUpMenu object for which we'll be setting up the listener
+     * Sets up the popup with a listener
+     * @param popup menu object for which we'll be setting up the listener
      */
     private void setUpPopup(PopupMenu popup) {
         popup.setOnMenuItemClickListener(item -> {
@@ -126,10 +117,17 @@ public class PlayActivity extends AppCompatActivity {
         });
     }
 
-    public void switchToWinning(Context context, int distTraveled) {
-        winningState = new Intent(context, WinningActivity.class);
-        winningState.putExtra("Path Length", distTraveled);
-        winningState.putExtra("Shortest Path", shortestPath);
+    /**
+     * Sets up the endgame intent
+     * @param context in which the intent should be created (PlayManually or PlayAnimation)
+     * @param winning status (determine whether to proceed to WinningActivity or LosingActivity)
+     * @param distTraveled by the player (manual or driver)
+     */
+    public void switchToEndgame(Context context, boolean winning, int distTraveled) {
+        // create a new intent containing the path length and shortest path
+        endgameData = winning ? new Intent(context, WinningActivity.class) : new Intent(context, LosingActivity.class);
+        endgameData.putExtra("Path Length", distTraveled);
+        endgameData.putExtra("Shortest Path", shortestPath);
         Log.v("Distance Traveled", ""+distTraveled);
     }
 }

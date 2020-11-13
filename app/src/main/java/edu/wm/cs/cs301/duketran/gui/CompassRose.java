@@ -1,7 +1,5 @@
 package edu.wm.cs.cs301.duketran.gui;
 
-import android.util.Log;
-
 import edu.wm.cs.cs301.duketran.generation.CardinalDirection;
 
 /**
@@ -42,7 +40,7 @@ public class CompassRose {
      * Construct a compass rose with the default settings.
      */
     public CompassRose(MazePanel mazePanel) {
-    	this(mazePanel, 0.9, 1.7, "Serif-PLAIN-16");
+    	this(mazePanel, 2.8, 1.7, "casual");
     }
     
     /**
@@ -80,10 +78,9 @@ public class CompassRose {
         int mid = width / 2;
         width = (int) (scaler * width);
         */
-        int width = (int) (scaler * size);
-        final int mainLength = (int) (width * MAIN_LENGTH / 2);
-        final int mainWidth = (int) (width * MAIN_WIDTH / 2);
-        Log.v("CR", mainLength+" "+mainWidth);
+        int width = mazePanel.convertPxToDp((int) (scaler * size));
+        final int mainLength =(int) (width * MAIN_LENGTH / 1.75);
+        final int mainWidth = (int) (width * MAIN_WIDTH / 1.75);
 
         drawBorderCircle(mazePanel, width);
 
@@ -98,7 +95,6 @@ public class CompassRose {
         final int[] y = new int[3];
         x[0] = centerX;
         y[0] = centerY;
-        Log.v("CR Center", centerX+" "+centerY);
         drawMainNorth(mazePanel, mainLength, mainWidth, x, y);
         drawMainEast(mazePanel, mainLength, mainWidth, x, y);
         drawMainSouth(mazePanel, mainLength, mainWidth, x, y);
@@ -211,9 +207,10 @@ public class CompassRose {
         return scaler;
     }
     
-    public void setScaler(double scaler) {
+    public void setScaler(MazePanel mazePanel, double scaler) {
         this.scaler = scaler;
         //repaint();
+        mazePanel.update();
     }
     
     public double getMarkerRadius() {

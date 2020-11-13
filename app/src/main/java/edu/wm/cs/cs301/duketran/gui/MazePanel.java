@@ -1,9 +1,15 @@
 package edu.wm.cs.cs301.duketran.gui;
 
+import edu.wm.cs.cs301.duketran.R;
+
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -12,25 +18,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 public class MazePanel extends View implements P5Panel {
-    // bufferImage can only be initialized if the container is displayable,
-    // uses a delayed initialization and relies on client class to call initBufferImage()
-    // before first use
-    //private Image bufferImage;
     private Bitmap bufferBitmap;
-    //private Graphics2D graphics; // obtained from bufferImage,
     private Canvas bufferCanvas;
     private Paint paint;
-    // graphics is stored to allow clients to draw on the same graphics object repeatedly
-    // has benefits if color settings should be remembered for subsequent drawing operations
+    private float density;
 
-    //private static final Color greenWM = Color.decode("#115740");
     static final int greenWM = Color.rgb(17, 87, 64); // 1136448
-    //private static final Color goldWM = Color.decode("#916f41");
     static final int goldWM = Color.rgb(145, 111, 65); // 9531201
     static final int yellowWM = Color.rgb(255, 255, 153); // 16777113
+    static final int darkPrimary = Color.rgb(6, 9, 48);
+    static final int lightPrimary = Color.rgb(31, 60, 136);
 
     static final int WHITE = Color.WHITE;
     static final int LIGHT_GRAY = Color.LTGRAY;
@@ -38,6 +36,9 @@ public class MazePanel extends View implements P5Panel {
     static final int BLACK = Color.BLACK;
     static final int RED = Color.RED;
     static final int YELLOW = Color.YELLOW;
+
+    static BitmapShader wallShader;
+    static BitmapShader floorShader;
 
     /**
      * Dimensions for the FirstPersonView
@@ -48,11 +49,38 @@ public class MazePanel extends View implements P5Panel {
     private int currentColor;
     private Typeface currentFont;
 
-    public MazePanel(Context context, @Nullable AttributeSet attrs) {
+    public MazePanel(Context context, AttributeSet attrs) {
         super(context, attrs);
-        bufferBitmap = Bitmap.createBitmap(Constants.VIEW_WIDTH, Constants.VIEW_HEIGHT, Bitmap.Config.ARGB_8888);
+        bufferBitmap = Bitmap.createBitmap(
+                convertDpToPx(context, attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_width", 350)),
+                convertDpToPx(context, attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_height", 350)),
+                Bitmap.Config.ARGB_8888);
         bufferCanvas = new Canvas(bufferBitmap);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        Bitmap wallTexture = BitmapFactory.decodeResource(context.getResources(), R.drawable.stone_wall);
+        wallShader = new BitmapShader(wallTexture, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR);
+        Bitmap floorTexture = BitmapFactory.decodeResource(context.getResources(), R.drawable.dirt);
+        floorShader = new BitmapShader(floorTexture, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+    }
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     * @param context Context to get resources and device specific display metrics
+     * @param dp value which we need to convert into pixels
+     * @return int value to represent px equivalent depending on device density
+     */
+    public int convertDpToPx(Context context, int dp) {
+        density = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * density);
+    }
+
+    /**
+     * This method converts device specific pixels to density independent pixels.
+     * @param px value which we need to convert into dp
+     * @return int value to represent dp equivalent
+     */
+    public int convertPxToDp(int px) {
+        return (int) (px / density);
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -103,9 +131,9 @@ public class MazePanel extends View implements P5Panel {
     public void commit() { invalidate(); }
 
     /**
-     * Draws the buffer image to the given graphics object.
+     * Draws the buffer image to the given canvas object.
      * This method is called when this panel should redraw itself.
-     * The given graphics object is the one that actually shows
+     * The given canvas object is the one that actually shows
      * on the screen.
      */
     public void paint(Canvas canvas) {
@@ -139,7 +167,7 @@ public class MazePanel extends View implements P5Panel {
      * Sets the color for future drawing requests. The color setting
      * will remain in effect till this method is called again and
      * with a different color.
-     * Substitute for Graphics.setColor method.
+     * Substitute for Paint.setColor method.
      * @param rgb gives the red green and blue encoded value of the color
      */
     @Override
@@ -158,16 +186,16 @@ public class MazePanel extends View implements P5Panel {
     }
 
     /**
-     * Sets the current font for the graphics
+     * Sets the current font for the paint
      * @param font name
      */
     public void setFont(String font) {
-        currentFont = Typeface.create(font, Typeface.NORMAL);
-        paint.setTypeface(Typeface.create(font, Typeface.NORMAL));
+        currentFont = Typeface.create(font, Typeface.BOLD);
+        paint.setTypeface(currentFont);
     }
 
     /**
-     * Provides the current font of the graphics
+     * Provides the current font of the paint
      */
     public Typeface getFont() {
         return currentFont;
@@ -196,8 +224,15 @@ public class MazePanel extends View implements P5Panel {
         setColor(getBackgroundColor(percentToExit, true));
         addFilledRectangle(0, 0, viewWidth, viewHeight/2);
         // dynamic color setting:
-        setColor(getBackgroundColor(percentToExit, false));
+        //setColor(getBackgroundColor(percentToExit, false));
+        // define a matrix to map the shader to the ground
+        Matrix shaderMatrix = new Matrix();
+        float[] points = {0, (float) (viewHeight/2.0), viewWidth, (float) (viewHeight/2.0)};
+        shaderMatrix.mapPoints(points);
+        floorShader.setLocalMatrix(shaderMatrix);
+        paint.setShader(floorShader);
         addFilledRectangle(0, viewHeight/2, viewWidth, viewHeight/2);
+        paint.setShader(null);
     }
 
     /**
@@ -210,7 +245,9 @@ public class MazePanel extends View implements P5Panel {
      * @return the color to use for the background rectangle
      */
     private int getBackgroundColor(float percentToExit, boolean top) {
-        return top ? blend(MazePanel.yellowWM, MazePanel.goldWM, percentToExit) :
+        //return top ? blend(MazePanel.yellowWM, MazePanel.goldWM, percentToExit) :
+                //blend(MazePanel.LIGHT_GRAY, MazePanel.greenWM, percentToExit);
+        return top ? blend(MazePanel.darkPrimary, MazePanel.lightPrimary, percentToExit) :
                 blend(MazePanel.LIGHT_GRAY, MazePanel.greenWM, percentToExit);
     }
 
@@ -239,7 +276,7 @@ public class MazePanel extends View implements P5Panel {
      * The rectangle is specified with the {@code (x,y)} coordinates
      * of the upper left corner and then its width for the
      * x-axis and the height for the y-axis.
-     * Substitute for Graphics.fillRect() method
+     * Substitute for Canvas.drawRect() method
      * @param x is the x-coordinate of the top left corner
      * @param y is the y-coordinate of the top left corner
      * @param width is the width of the rectangle
@@ -250,23 +287,46 @@ public class MazePanel extends View implements P5Panel {
         bufferCanvas.drawRect(x, y, x+width, y+height, paint);
     }
 
+
+    public void addFilledPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+
+    }
+
     /**
-     * Adds a filled polygon.
-     * The polygon is specified with {@code (x,y)} coordinates
+     * Adds a filled wall.
+     * The wall is specified with {@code (x,y)} coordinates
      * for the n points it consists of. All x-coordinates
      * are given in a single array, all y-coordinates are
      * given in a separate array. Both arrays must have
      * same length n. The order of points in the arrays
      * matter as lines will be drawn from one point to the next
      * as given by the order in the array.
-     * Substitute for Graphics.fillPolygon() method
-     * @param xPoints are the x-coordinates of points for the polygon
-     * @param yPoints are the y-coordinates of points for the polygon
+     * The wall will be textured with a custom bitmap shader.
+     * @param xPoints are the x-coordinates of points for the wall
+     * @param yPoints are the y-coordinates of points for the wall
      * @param nPoints is the number of points, the length of the arrays
      */
-    @Override
-    public void addFilledPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-        addPolygon(xPoints, yPoints, nPoints);
+    public void addWall(int[] xPoints, int[] yPoints, int nPoints) {
+        Path polygonPath = new Path();
+        paint.setStrokeWidth(5);
+        // define a matrix to map the shader to the wall
+        Matrix shaderMatrix = new Matrix();
+        float[] points = new float[nPoints * 2];
+        for (int i = 0; i < nPoints; i++) {
+            points[i] = xPoints[i];
+            points[i+1] = yPoints[i];
+        }
+        shaderMatrix.mapPoints(points);
+        wallShader.setLocalMatrix(shaderMatrix);
+        // apply the shader to the paint
+        paint.setShader(wallShader);
+        polygonPath.moveTo(xPoints[0], yPoints[0]);
+        for (int i = 1; i < nPoints; i++) {
+            polygonPath.lineTo(xPoints[i], yPoints[i]);
+        }
+        polygonPath.close();
+        bufferCanvas.drawPath(polygonPath, paint);
+        paint.setShader(null);
     }
 
     /**
@@ -279,7 +339,7 @@ public class MazePanel extends View implements P5Panel {
      * same length n. The order of points in the arrays
      * matter as lines will be drawn from one point to the next
      * as given by the order in the array.
-     * Substitute for Graphics.drawPolygon method
+     * Substitute for Canvas.drawPolygon method
      * @param xPoints are the x-coordinates of points for the polygon
      * @param yPoints are the y-coordinates of points for the polygon
      * @param nPoints is the number of points, the length of the arrays
@@ -300,7 +360,7 @@ public class MazePanel extends View implements P5Panel {
      * Adds a line.
      * A line is described by {@code (x,y)} coordinates for its
      * starting point and its end point.
-     * Substitute for Graphics.drawLine method
+     * Substitute for Canvas.drawLine method
      * @param startX is the x-coordinate of the starting point
      * @param startY is the y-coordinate of the starting point
      * @param endX is the x-coordinate of the end point
@@ -318,7 +378,7 @@ public class MazePanel extends View implements P5Panel {
      * of the upper left corner and then its width for the
      * x-axis and the height for the y-axis. An oval is
      * described like a rectangle.
-     * Substitute for Graphics.fillOval method
+     * Substitute for Canvas.drawOval method
      * @param x is the x-coordinate of the top left corner
      * @param y is the y-coordinate of the top left corner
      * @param width is the width of the oval
@@ -346,7 +406,7 @@ public class MazePanel extends View implements P5Panel {
      * noticeably longer in one axis than the other, the angles to the start
      * and end of the arc segment will be skewed farther along the longer
      * axis of the bounds.
-     * Substitute for Graphics.drawArc method
+     * Substitute for Canvas.drawArc method
      * @param x the x coordinate of the upper-left corner of the arc to be drawn.
      * @param y the y coordinate of the upper-left corner of the arc to be drawn.
      * @param width the width of the arc to be drawn.
@@ -370,12 +430,10 @@ public class MazePanel extends View implements P5Panel {
     @Override
     public void addMarker(float x, float y, String str) {
         Rect rect = new Rect();
+        paint.setTextSize(60);
         paint.getTextBounds(str, 0, str.length(), rect);
-
         x -= rect.width() / 2.0;
         y += rect.height() / 2.0;
-
-        paint.setTextSize(75);
         bufferCanvas.drawText(str, x, y, paint);
     }
 }

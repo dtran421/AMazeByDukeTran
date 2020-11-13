@@ -95,8 +95,8 @@
 
     <edu.wm.cs.cs301.duketran.gui.MazePanel
         android:id="@+id/mazePanel"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_width="325dp"
+        android:layout_height="325dp"
         app:layout_constraintTop_toBottomOf="@id/energyConsumptionLayout"
         app:layout_constraintBottom_toTopOf="@id/sensorText"
         app:layout_constraintStart_toStartOf="parent"

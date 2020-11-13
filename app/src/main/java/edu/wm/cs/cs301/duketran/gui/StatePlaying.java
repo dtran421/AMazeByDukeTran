@@ -163,8 +163,7 @@ public class StatePlaying extends DefaultState {
             walk(1);
             // check termination, did we leave the maze?
             if (isOutside(px,py)) {
-                //control.switchFromPlayingToWinning(distTraveled);
-                activity.switchToWinning(activity, distTraveled);
+                activity.switchToEndgame(activity, true, distTraveled);
             }
             break;
         case Left: // turn left

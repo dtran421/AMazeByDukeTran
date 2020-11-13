@@ -59,10 +59,13 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
         handler = new Handler();
         generationThread = new Thread(this);
         generationThread.start();
-
+        // set up the UI components
         setUpComponents();
     }
 
+    /**
+     * Resets the values of the fields once the activity is dismissed
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -103,8 +106,8 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
      * Sets up the UI components for the spinners and play button
      */
     private void setUpComponents() {
+        // set up the spinners with their respective options
         setUpSpinners();
-
         // set up a listener for the play button to start the game when clicked
         Button playButton = findViewById(R.id.playButton);
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -124,8 +127,8 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
                 result.putExtra("Robot", robot);
                 result.putExtra("Seed", seed);
                 // send the result back to the title activity
-                GeneratingActivity.this.setResult(RESULT_OK, result);
-                GeneratingActivity.this.finish();
+                setResult(RESULT_OK, result);
+                finish();
             }
         });
     }
@@ -144,27 +147,6 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
         adapter = ArrayAdapter.createFromResource(this, R.array.robot, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         robotSpinner.setAdapter(adapter);
-        // set up a listener for the driver spinner to determine when to show the robot layout
-        driverSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                toggleRobotLayout(parent.getItemAtPosition(position).toString());
-            }
-            public void onNothingSelected(AdapterView<?> parent) {
-                toggleRobotLayout(parent.getSelectedItem().toString());
-            }
-        });
-    }
-
-    /**
-     * Toggles the robot layout based on which drier was selected
-     * @param selectedItem the driver that was selected
-     */
-    private void toggleRobotLayout(String selectedItem) {
-        LinearLayout robotLayout = findViewById(R.id.robotLayout);
-        // if the selected driver is Wallfollwer, then allow the user to select a robot
-        if(!selectedItem.equals("Wallfollower")) robotLayout.setVisibility(View.INVISIBLE);
-        // else the robot is assumed to be reliable, so the user doesn't have to select one
-        else robotLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -193,6 +175,10 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
         MazeSingleton.getInstance().setMaze(mazeConfig);
     }
 
+    /**
+     * Updates the progress bar of the UI
+     * @param percentage of maze generation
+     */
     @Override
     public void updateProgress(int percentage) {
         if (currentProgress < percentage && percentage <= 100) {
@@ -223,6 +209,7 @@ public class GeneratingActivity extends AppCompatActivity implements Runnable, O
         }
         perfect = !generationSettings.getBoolean("Rooms", false);
         seed = generationSettings.getInt("Seed");
+        // order the maze factory to start generating the maze
         factory.order(this);
         Log.v("SkillLevel", ""+skillLevel);
         Log.v("Builder", ""+builder);

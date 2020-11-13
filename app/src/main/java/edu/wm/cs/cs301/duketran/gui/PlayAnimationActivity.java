@@ -4,7 +4,6 @@ import edu.wm.cs.cs301.duketran.R;
 import edu.wm.cs.cs301.duketran.generation.Maze;
 import edu.wm.cs.cs301.duketran.generation.MazeSingleton;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -47,7 +46,6 @@ public class PlayAnimationActivity extends PlayActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_animation);
-
         // obtain the intent containing the driver, robot, and maze sent from
         // the title activity
         Bundle mazeGame = getIntent().getExtras();
@@ -55,12 +53,13 @@ public class PlayAnimationActivity extends PlayActivity {
         String robot = mazeGame.getString("Robot");
         Log.v("Game driver", driver);
         Log.v("Game robot", robot);
-
+        // fetch the maze, set up the playing state, and start the game
         Maze maze = MazeSingleton.getInstance().getMaze();
         statePlaying = new StatePlaying();
         statePlaying.setMazeConfiguration(maze);
         setUpDriverAndRobot(statePlaying, maze, driver, robot);
         statePlaying.start(this, findViewById(R.id.mazePanel));
+        // set up the handler to handle the animation (and when to make a move)
         animationHandler = new Handler();
         setUpAnimation();
         // sets up the path length text view and the UI components for controlling the animation
@@ -83,10 +82,13 @@ public class PlayAnimationActivity extends PlayActivity {
 
     /**
      * Sets up the driver and robot fields
+     * @param statePlaying to allow the driver to control the robot
+     * @param maze in which the driver will be traversing
      * @param driver is the type of driver
      * @param robot is the type of robot
      */
     private void setUpDriverAndRobot(StatePlaying statePlaying, Maze maze, String driver, String robot) {
+        // set up the driver and robot
         if (driver.equals("Wizard")) {
             this.driver = new Wizard();
             this.robot = new ReliableRobot();
@@ -105,12 +107,15 @@ public class PlayAnimationActivity extends PlayActivity {
                 case "Soldier":
                     this.robot = new UnreliableRobot(0, 0, 0, 0);
             }
+            // make a new toast to alert the user that the sensors are being started up
+            Log.v("Play Animation", "Starting sensors' failure and repair processes...");
+            // start the failure and repair processes for robot if it has unreliable sensors
             for (Robot.Direction direction: Robot.Direction.values())
                 try {
                     this.robot.startFailureAndRepairProcess(direction, MEAN_TIME_BETWEEN_FAILURES, MEAN_TIME_TO_REPAIR);
                     Thread.sleep(1300);
                 } catch (Exception e) {
-                    Log.v("Driver Setup", "Reliable Sensor, moving on...");
+                    Log.v("Driver Setup", "Reliable Sensor, moving on");
                 }
         }
         this.robot.setController(statePlaying);
@@ -143,7 +148,6 @@ public class PlayAnimationActivity extends PlayActivity {
                 isAnimating = !isAnimating;
                 if (isAnimating) animationHandler.postDelayed(animation, (long) animationSpeed);
                 else animationHandler.removeCallbacks(animation);
-
                 // update the background color, text, and text color for start (red background,
                 // white text) and stop (green background, black text)
                 animationButton.setBackgroundColor(isAnimating ? ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorRepair)
@@ -167,6 +171,7 @@ public class PlayAnimationActivity extends PlayActivity {
                 if (animationSpeed != newSpeed) {
                     animationSpeed = newSpeed;
                     Log.v("Animation speed", "" + animationSpeed);
+                    // clear the animation queue and start it back up if animation turned on
                     animationHandler.removeCallbacks(animation);
                     if (isAnimating) animationHandler.postDelayed(animation, (long) animationSpeed);
                 }
@@ -180,15 +185,20 @@ public class PlayAnimationActivity extends PlayActivity {
     public void setUpAnimation() {
         animation = () -> {
             try {
+                // take a step and update the path length and energy consumption
                 driver.drive1Step2Exit();
                 setPathLength(driver.getPathLength());
                 updateEnergyConsumption(driver.getEnergyConsumption());
+                // update the sensors display
                 for (Robot.Direction dir: Robot.Direction.values())
                     updateSensorDisplay(dir, isOperational(dir));
+                // if the robot reaches the end, make it cross the exit and proceed to endgame (winning)
                 if (robot.isAtExit()) {
                     ((Wizard)driver).crossExit2Win(robot.getCurrentPosition());
                     switchToEndgame(true);
-                } else animationHandler.postDelayed(animation, (long) animationSpeed);
+                }
+                // otherwise have it repeat this process until it reaches the end
+                else animationHandler.postDelayed(animation, (long) animationSpeed);
             } catch (Exception e) {
                 Log.w("Driver Status", e.toString());
                 switchToEndgame(false);
@@ -198,26 +208,23 @@ public class PlayAnimationActivity extends PlayActivity {
     }
 
     /**
-     * Sets up the endgame shortcut buttons
+     * Sets up the endgame intent and proceeds to the endgame (WinningActivity or LosingActivity)
      * @param winning whether the driver beat the maze or lost
      */
-    private void switchToEndgame(final boolean winning) {
-        final Intent endgameState = winning ? new Intent(PlayAnimationActivity.this, WinningActivity.class)
-                : new Intent(PlayAnimationActivity.this, LosingActivity.class);
-        // create a new intent containing the mode, path length, shortest path, and
-        // energy consumption
-        endgameState.putExtra("Manual", false);
-        endgameState.putExtra("Path Length", driver.getPathLength());
-        endgameState.putExtra("Shortest Path", shortestPath);
-        endgameState.putExtra("Energy Consumption", driver.getEnergyConsumption());
+    private void switchToEndgame(boolean winning) {
+        super.switchToEndgame(this, winning, driver.getPathLength());
+        // set the mode in the intent to automatic (not manual)
+        // and add the energy consumption to the intent
+        endgameData.putExtra("Manual", false);
+        endgameData.putExtra("Energy Consumption", driver.getEnergyConsumption());
         Log.v("Animation Play", winning ? "Proceeding to WinningActivity" : "Proceeding to LosingActivity");
         // create a new toast to notify the user whether the driver won or lost
         // and start the winning or losing activity
         Toast toast = Toast.makeText(PlayAnimationActivity.this,
-                winning ? "You escaped!" : "You died!", Toast.LENGTH_SHORT);
+                winning ? "You survived!" : "You died!", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 50);
         toast.show();
-        startActivity(endgameState);
+        startActivity(endgameData);
         finish();
     }
 

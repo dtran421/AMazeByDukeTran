@@ -149,7 +149,6 @@ public class FirstPersonView {
         // draw background figure: black on bottom half, grey on top half
         drawBackground(mazePanel, percentToExit);
         // set color to white and draw what ever can be seen from the current position
-        //g.setColor(Color.white);
         mazePanel.setColor(MazePanel.WHITE);
         // reset the set of ranges to a single new element (0,width-1)
         // to cover the full width of the view 
@@ -408,7 +407,6 @@ public class FirstPersonView {
 		
 		// moved code for drawing bits and pieces into yet another method to 
 		// gain more clarity on what information is actually needed
-		//gc.setColor(wall.getColor());
 	    int newColor = wall.getColor();
 		mazePanel.setColor(newColor);
 		boolean drawn = drawPolygons(mazePanel, x1, x2, y11, y12, y21, y22);
@@ -490,7 +488,8 @@ public class FirstPersonView {
 			// debug
 			//System.out.println("polygon-x: " + xps[0] + ", " + xps[1] + ", " + xps[2] + ", " + xps[3]) ;
 			//System.out.println("polygon-y: " + yps[0] + ", " + yps[1] + ", " + yps[2] + ", " + yps[3]) ;
-			mazePanel.addFilledPolygon(xps, yps, 4);
+			//mazePanel.addFilledPolygon(xps, yps, 4);
+			mazePanel.addWall(xps, yps, 4);
 			// for debugging purposes, code will draw a red line around polygon
 			// this makes individual walls visible
 			/*

@@ -27,7 +27,7 @@ public class PlayManuallyActivity extends PlayActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_manual);
-        // obtain the intent containing the driver (no robot in manual mode) and maze sent from
+        // obtain the intent containing the driver (no robot needed in manual mode) and maze sent from
         // the title activity
         Bundle gameSettings = getIntent().getExtras();
         Log.v("Game driver", gameSettings.getString("Driver"));
@@ -70,12 +70,15 @@ public class PlayManuallyActivity extends PlayActivity {
      * @param button the ImageView object of the button being set up
      */
     private void setUpMovementButton(ImageView button, Constants.UserInput dir) {
+        // for left and right, the robot should rotate (no steps taken)
         if (dir == Constants.UserInput.Left || dir == Constants.UserInput.Right) {
             button.setOnClickListener(v -> {
                 statePlaying.keyDown(dir, 0);
                 Log.v("Turn", dir.toString());
             });
-        } else {
+        }
+        // for forward and backward, update the path length if needed
+        else {
             button.setOnClickListener(v -> {
                 int origDist = statePlaying.distTraveled;
                 statePlaying.keyDown(dir, 0);
@@ -88,17 +91,24 @@ public class PlayManuallyActivity extends PlayActivity {
         }
     }
 
+    /**
+     * Prepares an intent with the game data (path length and shortest path)
+     * and starts the winning activity
+     * @param context this
+     * @param winning always true (since it's manual)
+     * @param distTraveled by the manual player
+     */
     @Override
-    public void switchToWinning(Context context, int distTraveled) {
-        super.switchToWinning(context, distTraveled);
-        // create a new intent containing the play mode, the path length, and the shortest path
-        winningState.putExtra("Manual", true);
+    public void switchToEndgame(Context context, boolean winning, int distTraveled) {
+        super.switchToEndgame(context, true, distTraveled);
+        // set the play mode to manual in the intent
+        endgameData.putExtra("Manual", true);
         Log.v("Manual Play", "Proceeding to WinningActivity");
         // create a new toast to notify the user that they've won and start the winning activity
-        Toast toast = Toast.makeText(PlayManuallyActivity.this, "You escaped!", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(PlayManuallyActivity.this, "You survived!", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 50);
         toast.show();
-        startActivity(winningState);
+        startActivity(endgameData);
         finish();
     }
 }
