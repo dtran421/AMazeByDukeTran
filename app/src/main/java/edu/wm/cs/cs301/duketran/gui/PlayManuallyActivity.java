@@ -1,6 +1,7 @@
 package edu.wm.cs.cs301.duketran.gui;
 
 import edu.wm.cs.cs301.duketran.R;
+import edu.wm.cs.cs301.duketran.generation.Maze;
 import edu.wm.cs.cs301.duketran.generation.MazeSingleton;
 
 import android.content.Context;
@@ -31,22 +32,25 @@ public class PlayManuallyActivity extends PlayActivity {
         // the title activity
         Bundle gameSettings = getIntent().getExtras();
         Log.v("Game driver", gameSettings.getString("Driver"));
+        Maze maze = MazeSingleton.getInstance().getMaze();
         statePlaying = new StatePlaying();
-        statePlaying.setMazeConfiguration(MazeSingleton.getInstance().getMaze());
+        statePlaying.setMazeConfiguration(maze);
         statePlaying.start(this, findViewById(R.id.mazePanel));
         // set up the path length text view and UI buttons
         setPathLength(statePlaying.distTraveled);
-        setUpButtons();
+        setUpButtons(maze);
     }
 
     /**
      * Sets up the UI buttons for the menu, zoom, and movement
+     * @param maze of the current game
      */
-    private void setUpButtons() {
+    private void setUpButtons(Maze maze) {
         // set up the menu button, zoom buttons, and movement buttons
         setUpMenuButton(this);
         setUpZoomButtons();
         setUpMoveButtons();
+        getDistanceToExit(maze);
     }
 
     /**

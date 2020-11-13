@@ -64,7 +64,7 @@ public class PlayAnimationActivity extends PlayActivity {
         setUpAnimation();
         // sets up the path length text view and the UI components for controlling the animation
         setPathLength(this.driver.getPathLength());
-        setUpComponents();
+        setUpComponents(maze);
     }
 
     /**
@@ -127,12 +127,16 @@ public class PlayAnimationActivity extends PlayActivity {
 
     /**
      * Sets up the UI components
+     * @param maze of the current game
      */
-    private void setUpComponents() {
+    private void setUpComponents(Maze maze) {
         // set up the menu and zoom buttons and the animation components
+        showMap = true;
+        statePlaying.keyDown(Constants.UserInput.ToggleLocalMap, 0);
         setUpMenuButton(this);
         setUpZoomButtons();
         setUpAnimationComponents();
+        getDistanceToExit(maze);
     }
 
     /**
@@ -141,23 +145,20 @@ public class PlayAnimationActivity extends PlayActivity {
     private void setUpAnimationComponents() {
         // create a listener for the animation button to update when clicked on
         final Button animationButton = findViewById(R.id.animationButton);
-        animationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // toggle the animation
-                isAnimating = !isAnimating;
-                if (isAnimating) animationHandler.postDelayed(animation, (long) animationSpeed);
-                else animationHandler.removeCallbacks(animation);
-                // update the background color, text, and text color for start (red background,
-                // white text) and stop (green background, black text)
-                animationButton.setBackgroundColor(isAnimating ? ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorRepair)
-                        : ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorOperational));
-                animationButton.setText(isAnimating ? R.string.stopAnimationText : R.string.startAnimationText);
-                animationButton.setTextColor(isAnimating ? ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorPrimary)
-                        : ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorPrimaryDark));
-                Log.v("Currently animating", ""+isAnimating);
-                Log.v("Animation speed", "" + animationSpeed);
-            }
+        animationButton.setOnClickListener(v -> {
+            // toggle the animation
+            isAnimating = !isAnimating;
+            if (isAnimating) animationHandler.postDelayed(animation, (long) animationSpeed);
+            else animationHandler.removeCallbacks(animation);
+            // update the background color, text, and text color for start (red background,
+            // white text) and stop (green background, black text)
+            animationButton.setBackgroundColor(isAnimating ? ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorRepair)
+                    : ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorOperational));
+            animationButton.setText(isAnimating ? R.string.stopAnimationText : R.string.startAnimationText);
+            animationButton.setTextColor(isAnimating ? ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorPrimary)
+                    : ContextCompat.getColor(PlayAnimationActivity.this, R.color.colorPrimaryDark));
+            Log.v("Currently animating", ""+isAnimating);
+            Log.v("Animation speed", "" + animationSpeed);
         });
         // create a listener for the slider to update the animation speed once the user has selected
         // a new speed

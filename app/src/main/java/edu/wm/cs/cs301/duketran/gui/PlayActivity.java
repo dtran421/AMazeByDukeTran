@@ -1,6 +1,7 @@
 package edu.wm.cs.cs301.duketran.gui;
 
 import edu.wm.cs.cs301.duketran.R;
+import edu.wm.cs.cs301.duketran.generation.Maze;
 
 import android.content.Context;
 import android.content.Intent;
@@ -115,6 +116,15 @@ public class PlayActivity extends AppCompatActivity {
             statePlaying.keyDown(Constants.UserInput.ZoomOut, 0);
             Log.v("Zoom", ""+zoom);
         });
+    }
+
+    /**
+     * Gets the shortest path to the exit from the starting position
+     * @param maze of the current game
+     */
+    protected void getDistanceToExit(Maze maze) {
+        int[] startPos = maze.getStartingPosition();
+        shortestPath = maze.getDistanceToExit(startPos[0], startPos[1]);
     }
 
     /**
